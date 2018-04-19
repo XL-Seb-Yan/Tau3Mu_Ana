@@ -97,7 +97,8 @@ void selectMC(const TString conf="samples.conf", // input file
   baconhep::TGenEventInfo *geninfo  = new baconhep::TGenEventInfo();
   TClonesArray *genPartArr = new TClonesArray("baconhep::TGenParticle");
   TClonesArray *vertexArr  = new TClonesArray("baconhep::TVertex");
-  //TClonesArray *muon_pt  = new TClonesArray(int);
+  int* runnum = new int();
+  int* evtnum = new int();
   std::vector<float> *muon_pt = new std::vector<float>();
   std::vector<float> *muon_eta = new std::vector<float>();
   std::vector<float> *muon_phi = new std::vector<float>();
@@ -162,7 +163,9 @@ void selectMC(const TString conf="samples.conf", // input file
 
       // Access Event Tree
       eventTree = (TTree*)infile->Get("Events");
-      assert(eventTree);  
+      assert(eventTree);
+      eventTree->SetBranchAddress("runNum", &runnum);               TBranch *runNumBr = eventTree->GetBranch("runNum");
+      eventTree->SetBranchAddress("evtNum", &evtnum);               TBranch *evtNumBr = eventTree->GetBranch("evtNum");
       eventTree->SetBranchAddress("Info", &info);                   TBranch *infoBr = eventTree->GetBranch("Info");
       eventTree->SetBranchAddress("GenEvtInfo", &geninfo);          TBranch *geninfoBr = eventTree->GetBranch("GenEvtInfo");
       eventTree->SetBranchAddress("PV", &vertexArr);                TBranch *vertexBr = eventTree->GetBranch("PV");
@@ -211,11 +214,14 @@ void selectMC(const TString conf="samples.conf", // input file
       Bool_t hasGen = eventTree->GetBranchStatus("GenEvtInfo");
 
       for(UInt_t ientry=0; ientry<eventTree->GetEntries(); ientry++) {
-        if(ientry%20000==0) cout << "Processing event " << ientry << ". " << (double)ientry/(double)eventTree->GetEntries()*100 << " percent done with this file." << endl;
+        if(ientry%500==0) cout << "Processing event " << ientry << ". " << (double)ientry/(double)eventTree->GetEntries()*100 << " percent done with this file." << endl;
 
+	// Get Events
 	infoBr->GetEntry(ientry);        geninfoBr->GetEntry(ientry);
 	genPartArr->Clear();             genPartBr->GetEntry(ientry);
 	vertexArr->Clear();              vertexBr->GetEntry(ientry);
+	runNumBr->GetEntry(ientry);
+	evtNumBr->GetEntry(ientry);
 	muon_pt->clear();                muonPtBr->GetEntry(ientry);
 	muon_eta->clear();               muonEtaBr->GetEntry(ientry);
 	muon_phi->clear();               muonPhiBr->GetEntry(ientry);
@@ -258,10 +264,149 @@ void selectMC(const TString conf="samples.conf", // input file
 	vf_Prob->clear();                vfProbBr->GetEntry(ientry);
 	tri_category->clear();           triCategoryBr->GetEntry(ientry);
 
-	cout<<muon_pt->size()<<endl;
-	cout<<vf_Prob->size()<<endl;
-	cout<<tri_category->size()<<endl;
-	cout<<endl;
+	std::vector<float> pt, eta, phi, ptErr, staPt, staEta, staPhi, pfPt, pfEta, pfPhi;
+	std::vector<float> trkIso, ecalIso, hcalIso, chHadIso, gammaIso, neuHadIso, puIso, d0, dz, sip3d;
+	std::vector<float> tkNchi2, muNchi2, trkKink, glbKink;
+	std::vector<int> q, nValidHits, trkID, hltMatchBits, category;
+	std::vector<unsigned int> typeBits, selectorBits, pogIDBits, nTkHits, nPixHits, nTkLayers, nPixLayers, nMatchStn;
+	std::vector<float> tC, dOF, nC, Prob;
+
+        for(vector<float>::iterator it = muon_pt->begin(); it != muon_pt->end(); it++)
+	  pt.push_back(*it);
+	for(vector<float>::iterator it = muon_eta->begin(); it != muon_eta->end(); it++)
+	  eta.push_back(*it);
+	for(vector<float>::iterator it = muon_phi->begin(); it != muon_phi->end(); it++)
+	  phi.push_back(*it);
+	for(vector<float>::iterator it = muon_ptErr->begin(); it != muon_ptErr->end(); it++)
+	  ptErr.push_back(*it);
+	for(vector<float>::iterator it = muon_staPt->begin(); it != muon_staPt->end(); it++)
+	  staPt.push_back(*it);
+	for(vector<float>::iterator it = muon_staEta->begin(); it != muon_staEta->end(); it++)
+	  staEta.push_back(*it);
+	for(vector<float>::iterator it = muon_staPhi->begin(); it != muon_staPhi->end(); it++)
+	  staPhi.push_back(*it);
+	for(vector<float>::iterator it = muon_pfPt->begin(); it != muon_pfPt->end(); it++)
+	  pfPt.push_back(*it);
+	for(vector<float>::iterator it = muon_pfEta->begin(); it != muon_pfEta->end(); it++)
+	  pfEta.push_back(*it);
+	for(vector<float>::iterator it = muon_pfPhi->begin(); it != muon_pfPhi->end(); it++)
+	  pfPhi.push_back(*it);
+	for(vector<float>::iterator it = muon_trkIso->begin(); it != muon_trkIso->end(); it++)
+	  trkIso.push_back(*it);
+	for(vector<float>::iterator it = muon_ecalIso->begin(); it != muon_ecalIso->end(); it++)
+	  ecalIso.push_back(*it);
+	for(vector<float>::iterator it = muon_hcalIso->begin(); it != muon_hcalIso->end(); it++)
+	  hcalIso.push_back(*it);
+	for(vector<float>::iterator it = muon_chHadIso->begin(); it != muon_chHadIso->end(); it++)
+	  chHadIso.push_back(*it);
+	for(vector<float>::iterator it = muon_gammaIso->begin(); it != muon_gammaIso->end(); it++)
+	  gammaIso.push_back(*it);
+	for(vector<float>::iterator it = muon_neuHadIso->begin(); it != muon_neuHadIso->end(); it++)
+	  neuHadIso.push_back(*it);
+	for(vector<float>::iterator it = muon_puIso->begin(); it != muon_puIso->end(); it++)
+	  puIso.push_back(*it);
+	for(vector<float>::iterator it = muon_d0->begin(); it != muon_d0->end(); it++)
+	  d0.push_back(*it);
+	for(vector<float>::iterator it = muon_dz->begin(); it != muon_dz->end(); it++)
+	  dz.push_back(*it);
+	for(vector<float>::iterator it = muon_sip3d->begin(); it != muon_sip3d->end(); it++)
+	  sip3d.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_typeBits->begin(); it != muon_typeBits->end(); it++)
+	  typeBits.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_selectorBits->begin(); it != muon_selectorBits->end(); it++)
+	  selectorBits.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_pogIDBits->begin(); it != muon_pogIDBits->end(); it++)
+	  pogIDBits.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_nTkHits->begin(); it != muon_nTkHits->end(); it++)
+	  nTkHits.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_nPixHits->begin(); it != muon_nPixHits->end(); it++)
+	  nPixHits.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_nTkLayers->begin(); it != muon_nTkLayers->end(); it++)
+	  nTkLayers.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_nPixLayers->begin(); it != muon_nPixLayers->end(); it++)
+	  nPixLayers.push_back(*it);
+	for(vector<unsigned int>::iterator it = muon_nMatchStn->begin(); it != muon_nMatchStn->end(); it++)
+	  nMatchStn.push_back(*it);
+	for(vector<int>::iterator it = muon_q->begin(); it != muon_q->end(); it++)
+	  q.push_back(*it);
+	for(vector<int>::iterator it = muon_nValidHits->begin(); it != muon_nValidHits->end(); it++)
+	  nValidHits.push_back(*it);
+	for(vector<int>::iterator it = muon_trkID->begin(); it != muon_trkID->end(); it++)
+	  trkID.push_back(*it);
+	for(vector<int>::iterator it = muon_hltMatchBits->begin(); it != muon_hltMatchBits->end(); it++)
+	  hltMatchBits.push_back(*it);	
+	for(vector<float>::iterator it = muon_tkNchi2->begin(); it != muon_tkNchi2->end(); it++)
+	  tkNchi2.push_back(*it);
+	for(vector<float>::iterator it = muon_muNchi2->begin(); it != muon_muNchi2->end(); it++)
+	  muNchi2.push_back(*it);
+	for(vector<float>::iterator it = muon_trkKink->begin(); it != muon_trkKink->end(); it++)
+	  trkKink.push_back(*it);
+	for(vector<float>::iterator it = muon_glbKink->begin(); it != muon_glbKink->end(); it++)
+	  glbKink.push_back(*it);
+	for(vector<float>::iterator it = vf_tC->begin(); it != vf_tC->end(); it++)
+	  tC.push_back(*it);
+	for(vector<float>::iterator it = vf_dOF->begin(); it != vf_dOF->end(); it++)
+	  dOF.push_back(*it);
+	for(vector<float>::iterator it = vf_nC->begin(); it != vf_nC->end(); it++)
+	  nC.push_back(*it);
+	for(vector<float>::iterator it = vf_Prob->begin(); it != vf_Prob->end(); it++)
+	  Prob.push_back(*it);
+	for(vector<int>::iterator it = tri_category->begin(); it != tri_category->end(); it++)
+	  category.push_back(*it);
+
+	//Store GEN level tau muon
+	vector<baconhep::TGenParticle*> genmuonArr;
+	for(int i=0; i<genPartArr->GetEntries(); i++){
+	  baconhep::TGenParticle *genpar = (baconhep::TGenParticle*)((*genPartArr)[i]);
+	  if(genpar->pdgId != 13 && genpar->pdgId != -13) continue;
+	  if(genpar->status != 1) continue;
+	  Int_t parentid1=dynamic_cast<baconhep::TGenParticle *>(genPartArr->At(genpar->parent>-1 ? genpar->parent : 0))->pdgId;
+	  if(parentid1 != 15 && parentid1 != -15) continue;
+	  genmuonArr.push_back(genpar);
+	}
+
+	//Only study events contain single decay 229041
+	if(genmuonArr.size() > 3) continue;
+	count1++;
+
+	// Code here:===============================================================================
+	/*
+	if(genmuonArr[0]->pt > 3 && genmuonArr[1]->pt > 3 && genmuonArr[2]->pt > 3){
+	  TLorentzVector v1,v2,v3;
+	  for(int i=0; i<category.size(); i++){
+	    if(category[i] == 1){
+	      cout<<*runnum<<" "<<*evtnum<<endl;
+	      cout<<"muon1: "<<pt[i*3]<<" "<<eta[i*3]<<" "<<phi[i*3]<<" "<<typeBits[i*3]<<endl;
+	      cout<<"muon2: "<<pt[i*3+1]<<" "<<eta[i*3+1]<<" "<<phi[i*3+1]<<" "<<typeBits[i*3+1]<<endl;
+	      cout<<"muon3: "<<pt[i*3+2]<<" "<<eta[i*3+2]<<" "<<phi[i*3+2]<<" "<<typeBits[i*3+2]<<endl;
+	    }
+	  }
+	  v1.SetPtEtaPhiM(genmuonArr[0]->pt,genmuonArr[0]->eta,genmuonArr[0]->phi,0.105658);
+	  v2.SetPtEtaPhiM(genmuonArr[1]->pt,genmuonArr[1]->eta,genmuonArr[1]->phi,0.105658);
+	  v3.SetPtEtaPhiM(genmuonArr[2]->pt,genmuonArr[2]->eta,genmuonArr[2]->phi,0.105658);
+	  cout<<genmuonArr[0]->pt<<" "<<genmuonArr[0]->eta<<" "<<genmuonArr[0]->phi<<endl;
+	  cout<<genmuonArr[1]->pt<<" "<<genmuonArr[1]->eta<<" "<<genmuonArr[1]->phi<<endl;
+	  cout<<genmuonArr[2]->pt<<" "<<genmuonArr[2]->eta<<" "<<genmuonArr[2]->phi<<endl;
+	  cout<<"All GEN muon here: "<<endl;
+	  for(int i=0; i<genPartArr->GetEntries(); i++){
+	    baconhep::TGenParticle *genpar = (baconhep::TGenParticle*)((*genPartArr)[i]);
+	    if(genpar->pdgId != 13 && genpar->pdgId != -13) continue;
+	    if(genpar->status != 1) continue;
+	    Int_t parentid=dynamic_cast<baconhep::TGenParticle *>(genPartArr->At(genpar->parent>-1 ? genpar->parent : 0))->pdgId;
+	    cout<<genpar->pt<<" "<<genpar->eta<<" "<<genpar->phi<<" "<<parentid<<endl;
+	  }
+	  cout<<endl;
+	}
+	*/
+	TLorentzVector v1,v2,v3;
+	for(int i=0; i<category.size(); i++){
+	  if(category[i] == 1){
+	    v1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658);
+	    v2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658);
+	    v3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658);
+	    hist0->Fill((v1+v2+v3).M());
+	  }
+	}
       }//end of event loop
       
       hist0->Scale(1/hist0->GetEntries());
