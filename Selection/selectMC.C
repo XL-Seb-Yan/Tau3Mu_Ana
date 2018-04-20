@@ -52,17 +52,41 @@ void selectMC(const TString conf="samples.conf", // input file
   //--------------------------------------------------------------------------------------------------------------
   // Settings 
   //============================================================================================================== 
-  TH1F* hist0 = new TH1F("tau -> 3 muon 0","RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",50,0,5);
-  TH1F* hist2 = new TH1F("tau -> 3 muon 2","RECO p_{T}",75,0,15);
-  TH1F* hist3 = new TH1F("tau -> 3 muon 3","RECO #eta",50,-3,3);
-  TH1F* hist4 = new TH1F("tau -> 3 muon 4","RECO #varphi",25,-3.5,3.5);
-  TH1F* hist5 = new TH1F("tau -> 3 muon 5","RECO p_{T}",75,0,15);
-  TH1F* hist6 = new TH1F("tau -> 3 muon 6","RECO #eta",50,-3,3);
-  TH1F* hist7 = new TH1F("tau -> 3 muon 7","RECO #varphi",25,-3.5,3.5);
-  TH1F* hist8 = new TH1F("tau -> 3 muon 8","RECO p_{T}",75,0,15);
-  TH1F* hist9 = new TH1F("tau -> 3 muon 9","RECO #eta",50,-3,3);
-  TH1F* hist10 = new TH1F("tau -> 3 muon 10","RECO #varphi",25,-3.5,3.5);
-  UInt_t count1=0, count2=0, count3=0;
+  //TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
+  TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,0,60);
+  TH1F* hist1a = new TH1F("tau -> 3 muon 1a","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
+  TH1F* hist1b = new TH1F("tau -> 3 muon 1b","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
+  TH1F* hist1c = new TH1F("tau -> 3 muon 1c","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
+  TH1F* hist1d = new TH1F("tau -> 3 muon 1d","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",50,0,50);
+  
+  TH1F* hist2 = new TH1F("tau -> 3 muon 2","MC RECO p_{T}",125,0,25);
+  TH1F* hist3 = new TH1F("tau -> 3 muon 3","MC RECO #eta",50,-3,3);
+  TH1F* hist4 = new TH1F("tau -> 3 muon 4","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5 = new TH1F("tau -> 3 muon 5","MC RECO p_{T}",125,0,25);
+  TH1F* hist6 = new TH1F("tau -> 3 muon 6","MC RECO #eta",50,-3,3);
+  TH1F* hist7 = new TH1F("tau -> 3 muon 7","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8 = new TH1F("tau -> 3 muon 8","MC RECO p_{T}",125,0,25);
+  TH1F* hist9 = new TH1F("tau -> 3 muon 9","MC RECO #eta",50,-3,3);
+  TH1F* hist10 = new TH1F("tau -> 3 muon 10","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist2b = new TH1F("tau -> 3 muon 2b","MC RECO p_{T}",125,0,255);
+  TH1F* hist3b = new TH1F("tau -> 3 muon 3b","MC RECO #eta",50,-3,3);
+  TH1F* hist4b = new TH1F("tau -> 3 muon 4b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5b = new TH1F("tau -> 3 muon 5b","MC RECO p_{T}",125,0,25);
+  TH1F* hist6b = new TH1F("tau -> 3 muon 6b","MC RECO #eta",50,-3,3);
+  TH1F* hist7b = new TH1F("tau -> 3 muon 7b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8b = new TH1F("tau -> 3 muon 8b","MC RECO p_{T}",125,0,25);
+  TH1F* hist9b = new TH1F("tau -> 3 muon 9b","MC RECO #eta",50,-3,3);
+  TH1F* hist10b = new TH1F("tau -> 3 muon 10b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist2c = new TH1F("tau -> 3 muon 2c","MC RECO p_{T}",125,0,25);
+  TH1F* hist3c = new TH1F("tau -> 3 muon 3c","MC RECO #eta",50,-3,3);
+  TH1F* hist4c = new TH1F("tau -> 3 muon 4c","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5c = new TH1F("tau -> 3 muon 5c","MC RECO p_{T}",125,0,25);
+  TH1F* hist6c = new TH1F("tau -> 3 muon 6c","MC RECO #eta",50,-3,3);
+  TH1F* hist7c = new TH1F("tau -> 3 muon 7c","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8c = new TH1F("tau -> 3 muon 8c","MC RECO p_{T}",125,0,25);
+  TH1F* hist9c = new TH1F("tau -> 3 muon 9c","MC RECO #eta",50,-3,3);
+  TH1F* hist10c = new TH1F("tau -> 3 muon 10c","MC RECO #varphi",25,-3.5,3.5);
+  UInt_t count1=0, count2=0, count3=0, count4=0, count5=0, count6=0;
   gStyle->SetOptStat(0);
 
   
@@ -401,60 +425,145 @@ void selectMC(const TString conf="samples.conf", // input file
 	}
 	*/
 	
-	TLorentzVector v1,v2,v3;
-	int c1=0,c2=0;
+	TLorentzVector temp1,temp2,temp3;
+	float maxmass = 0;
+	int maxmassnum = -99;
 	for(int i=0; i<category.size(); i++){
-	  if(category[i] == 1){
-	    c1++;
-	    v1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
-	    v2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
-	    v3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);
+	  temp1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
+	  temp2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
+	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);
+	  float invmass_temp = (temp1+temp2+temp3).M();
 
-	    // Mass cuts
-	    if(q[i*3] * q[i*3+1] < 0){
-	      double mass_temp = (v1+v2).M();
-	      if(mass_temp < 0.45) continue;
-	      if(abs(mass_temp - 0.782) < 0.02) continue;
-	    }
-	    if(q[i*3] * q[i*3+2] < 0){
-	      double mass_temp = (v1+v3).M();
-	      if(mass_temp < 0.45) continue;
-	      if(abs(mass_temp - 0.782) < 0.02) continue;
-	    }
-	    if(q[i*3+1] * q[i*3+2] < 0){
-	      double mass_temp = (v2+v3).M();
-	      if(mass_temp < 0.45) continue;
-	      if(abs(mass_temp - 0.782) < 0.02) continue;
-	    }
-	    cout<<ientry<<endl;
+	  if(category[i] != 1) continue;
+
+	  // Mass cuts
+	  /*
+	  if(q[i*3] * q[i*3+1] < 0){
+	    double mass_temp = (temp1+temp2).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
+	  if(q[i*3] * q[i*3+2] < 0){
+	    double mass_temp = (temp1+temp3).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
+	  if(q[i*3+1] * q[i*3+2] < 0){
+	    double mass_temp = (temp2+temp3).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
 	    
-	    bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3]));
-	    bool MuonTriObj2 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+1]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+1]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+1]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+1]));
-	    bool MuonTriObj3 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+2]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+2]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+2]) ||
-			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+2]));
-	    cout<<MuonTriObj1<<MuonTriObj2<<MuonTriObj3<<endl;
-	    if(!MuonTriObj1) continue;
-	    if(!MuonTriObj2) continue;
-	    if(!MuonTriObj3) continue;
+	  bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3]));
+	  bool MuonTriObj2 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+1]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+1]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+1]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+1]));
+	  bool MuonTriObj3 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+2]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+2]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+2]) ||
+			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+2]));
+	  if(!MuonTriObj1) continue;
+	  if(!MuonTriObj2) continue;
+	  if(!MuonTriObj3) continue;
+	  */
 
-
-	    // Fill tree
-	    hist0->Fill((v1+v2+v3).M());
-	    count2++;
+	  if(invmass_temp > maxmass){
+	    maxmass = invmass_temp;
+	    maxmassnum = i;
 	  }
 	}
-	cout<<category.size()<<" "<<c1<<endl;
+	if(maxmassnum < 0) continue;
+
+	// Fill histogram
+	// Mass
+	TLorentzVector v1,v2,v3;
+	v1.SetPtEtaPhiM(pt[maxmassnum*3],eta[maxmassnum*3],phi[maxmassnum*3],0.105658369);
+	v2.SetPtEtaPhiM(pt[maxmassnum*3+1],eta[maxmassnum*3+1],phi[maxmassnum*3+1],0.105658369);
+	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.105658369);
+	float invmass = (v1+v2+v3).M();
+	hist0->Fill(invmass);
+	count2++;
+	Int_t B = 0;
+	Int_t M = 0;
+	Int_t E = 0;
+	if (fabs(eta[maxmassnum*3])<0.8) B++;
+	if (fabs(eta[maxmassnum*3+1])<0.8) B++;
+	if (fabs(eta[maxmassnum*3+2])<0.8) B++;
+	if (fabs(eta[maxmassnum*3])>=0.8 && fabs(eta[maxmassnum*3])<1.6) M++;
+	if (fabs(eta[maxmassnum*3+1])>=0.8 && fabs(eta[maxmassnum*3+1])<1.6) M++;
+	if (fabs(eta[maxmassnum*3+2])>=0.8 && fabs(eta[maxmassnum*3+2])<1.6) M++;
+	if (fabs(eta[maxmassnum*3])>=1.6) E++;
+	if (fabs(eta[maxmassnum*3+1])>=1.6) E++;
+	if (fabs(eta[maxmassnum*3+2])>=1.6) E++;
+	if (B==3){
+	  count3++;
+	  hist1a->Fill(invmass);}//store events come from tau
+	else if(B==2&&M==1){
+	  count3++;
+	  hist1a->Fill(invmass);}
+	else if(B==2&&E==1){
+	  count3++;
+	  hist1a->Fill(invmass);}
+	else if(M==3){
+	  count4++;
+	  hist1b->Fill(invmass);}
+	else if(M==2&&B==1){
+	  count4++;
+	  hist1b->Fill(invmass);}
+	else if(M==2&&E==1){
+	  count4++;
+	  hist1b->Fill(invmass);}
+	else if(E==3){
+	  count5++;
+	  hist1c->Fill(invmass);}
+	else if(E==2&&B==1){
+	  count5++;
+	  hist1c->Fill(invmass);}
+	else if(E==2&&M==1){
+	  count5++;
+	  hist1c->Fill(invmass);}
+	else if(B==1&&M==1&&E==1){
+	  hist1d->Fill(invmass);
+	  count6++;}	      
+	else{
+	  cout<<B<<M<<E<<endl;
+	}
+
+	// Kinematics
+	//Sort muon array
+	int sort[3]={-99,-99,-99};
+	Double_t maxpt=-99, submaxpt=-99;
+	for(int l=0; l<3; l++){
+	  if(pt[maxmassnum*3+l] >= maxpt){
+	    submaxpt = maxpt;
+	    maxpt = pt[maxmassnum*3+l];
+	    sort[2] = sort[1];
+	    sort[1] = sort[0];
+	    sort[0] = maxmassnum*3+l;
+	  }
+	  else if(pt[maxmassnum*3+l] < maxpt && pt[maxmassnum*3+l] >= submaxpt){
+	    submaxpt = pt[maxmassnum*3+l];
+	    sort[2] = sort[1];
+	    sort[1] = maxmassnum*3+l;
+	  }
+	  else{
+	    sort[2] = maxmassnum*3+l;
+	  }
+	}
+	hist2->Fill(pt[sort[0]]); hist5->Fill(pt[sort[1]]); hist8->Fill(pt[sort[2]]);
+	hist3->Fill(eta[sort[0]]); hist6->Fill(eta[sort[1]]); hist9->Fill(eta[sort[2]]);
+	hist4->Fill(phi[sort[0]]); hist7->Fill(phi[sort[1]]); hist10->Fill(phi[sort[2]]);
       }//end of event loop
       
       hist0->Scale(1/hist0->GetEntries());
+      hist1a->Scale(1/hist1a->GetEntries());
+      hist1b->Scale(1/hist1b->GetEntries());
+      hist1c->Scale(1/hist1c->GetEntries());
+      hist1d->Scale(1/hist1d->GetEntries());
       hist2->Scale(1/hist2->GetEntries());
       hist3->Scale(1/hist3->GetEntries());
       hist4->Scale(1/hist4->GetEntries());
@@ -481,20 +590,19 @@ void selectMC(const TString conf="samples.conf", // input file
   //--------------------------------------------------------------------------------------------------------------
   // Output
   //==============================================================================================================
-  cout<<count1<<" "<<count2<<" "<<count3<<endl;
-  
+  cout<<count1<<" "<<count2<<" "<<count3<<" "<<count4<<" "<<count5<<" "<<count6<<endl;
+
   //THStack *all = new THStack("tau -> 3 muons","invariant mass");
   TCanvas *c0 = new TCanvas("c0","invariant mass",1200,900);
   TAxis *xaxis = hist0->GetXaxis();
   TAxis *yaxis = hist0->GetYaxis();
-
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{pm}#mu^{#pm}} (GeV)");
-  yaxis->SetTitle("a.u. / 0.1 GeV");
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{pm}#mu^{#pm}}");
+  yaxis->SetTitle("a.u. / 10 MeV");
+  yaxis->SetTitleOffset(1.2);
   c0->cd();
-  
 
-  hist0->SetFillColor(5);
-  hist0->SetFillStyle(0);
+  hist0->SetFillColor(40);
+  //hist0->SetFillStyle(0);
   //hist1->SetFillColor(7);
   //hist3->SetFillColor(7);
   //hist4->SetFillColor(8);
@@ -519,11 +627,11 @@ void selectMC(const TString conf="samples.conf", // input file
     all->SetMinimum(8.);
     all->SetMaximum(120000.);
   */
-  TF1 *f1 = new TF1("m1","gaus",1.5,2);
-  TF1 *f2 = new TF1("m2","gaus",0,5);
-  TF1 *total = new TF1("mstotal","gaus(0)+gaus(3)",0,5);
-  Double_t par[6]={50,1.5,0.1,5,2.5,2};
-  hist0->Fit(f1,"R0");
+  TF1 *f1 = new TF1("m1","gaus",1.7,1.84);
+  TF1 *f2 = new TF1("m2","gaus",1.65,1.95);
+  TF1 *total = new TF1("mstotal","gaus(0)+gaus(3)",1.65,1.9);
+  Double_t par[6]={10,1.7,0.02,1,1.75,0.1};
+  //hist0->Fit(f1,"R0");
   //hist2->Fit(f2,"R0+");
   //f1->GetParameters(&par[0]);
   //f2->GetParameters(&par[3]);
@@ -535,31 +643,110 @@ void selectMC(const TString conf="samples.conf", // input file
   //f1->SetLineColor(3);
   //f1->Draw("SAME");
 
-  auto legend = new TLegend(0.5,0.7,0.7,0.8);
+  //auto legend = new TLegend(0.5,0.7,0.7,0.8);
   //legend->AddEntry(hist1,"3 muons with opposite signs","f");
-  legend->AddEntry(hist0,"Tau -> 3 Mu MC","f");
-  legend->Draw();
+  //legend->AddEntry(hist0,"Tau -> 3 Mu MC","f");
+  //legend->Draw();
   
 
   c0->Print("invariant mass.png");
-  
+
+ 
+  TCanvas *c0a = new TCanvas("c0a","invariant mass",1200,900);
+  xaxis = hist1a->GetXaxis();
+  yaxis = hist1a->GetYaxis();
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  yaxis->SetTitle("a.u. / 10 MeV");
+  yaxis->SetTitleOffset(1.2);
+  c0a->cd();
+  hist1a->SetFillColor(30);
+  //hist1a->SetFillStyle(0);
+  hist1a->Draw();
+  Double_t par1[6]={10,1.7,0.02,1,1.7,0.1};
+  total->SetParameters(par1);
+  hist1a->Fit(total,"R0+");
+  total->SetLineColor(2);
+  total->SetLineWidth(2);
+  //total->Draw("SAME");
+  c0a->Print("invariant massa.png");
+
+  TCanvas *c0b = new TCanvas("c0b","invariant mass",1200,900);
+  xaxis = hist1b->GetXaxis();
+  yaxis = hist1b->GetYaxis();
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  yaxis->SetTitle("a.u. / 10 MeV");
+  yaxis->SetTitleOffset(1.2);
+  c0b->cd();
+  hist1b->SetFillColor(40);
+  //hist1b->SetFillStyle(0);
+  hist1b->Draw();
+  Double_t par2[6]={10,1.7,0.02,1,1.7,0.1};
+  total->SetParameters(par2);
+  hist1b->Fit(total,"R0+");
+  total->SetLineColor(2);
+  total->SetLineWidth(2);
+  //total->Draw("SAME");
+  c0b->Print("invariant massb.png");
+
+  TCanvas *c0c = new TCanvas("c0c","invariant mass",1200,900);
+  xaxis = hist1c->GetXaxis();
+  yaxis = hist1c->GetYaxis();
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  yaxis->SetTitle("a.u. / 10 MeV");
+  yaxis->SetTitleOffset(1.2);
+  c0c->cd();
+  hist1c->SetFillColor(41);
+  //hist1c->SetFillStyle(0);
+  hist1c->Draw();
+  Double_t par3[6]={0.1,1.7,0.02,0.01,1.7,0.1};
+  total->SetParameters(par3);
+  hist1c->Fit(total,"R0+");
+  total->SetLineColor(2);
+  total->SetLineWidth(2);
+  //total->Draw("SAME");
+  c0c->Print("invariant massc.png");
+
+  TCanvas *c0d = new TCanvas("c0d","invariant mass",1200,900);
+  cout<<hist1d->GetEntries()<<endl;
+  xaxis = hist1d->GetXaxis();
+  yaxis = hist1d->GetYaxis();
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  yaxis->SetTitle("a.u. / 1 GeV");
+  yaxis->SetTitleOffset(1.2);
+  c0d->cd();
+  hist1d->SetFillColor(46);
+  //hist1d->SetFillStyle(0);
+  hist1d->Draw();
+  total->SetParameters(par);
+  hist1d->Fit(total,"R0+");
+  total->SetLineColor(2);
+  total->SetLineWidth(2);
+  //total->Draw("SAME");
+  c0d->Print("invariant massd.png");
+
+
   TCanvas *c1 = new TCanvas("1","muon pT",1200,900);
-  xaxis = hist2->GetXaxis();
-  yaxis = hist2->GetYaxis();
+  xaxis = hist5->GetXaxis();
+  yaxis = hist5->GetYaxis();
   xaxis->SetTitle("p_{T} (GeV)");
-  yaxis->SetTitle("a.u / 0.2 GeV");
+  yaxis->SetTitle("a.u. / 0.2 GeV");
+  yaxis->SetTitleOffset(1.3);
+  yaxis->SetRangeUser(0,1);
   c1->cd();
-  hist2->SetLineColor(2);
-  hist5->SetLineColor(6);
+  hist2->SetLineColor(4);
+  hist5->SetLineColor(4);
   hist8->SetLineColor(4);
+  hist2->SetLineStyle(1);
+  hist5->SetLineStyle(2);
+  hist8->SetLineStyle(5);
   hist2->SetFillStyle(0);
   hist5->SetFillStyle(0);
   hist8->SetFillStyle(0);
   hist2->Draw();
-  //hist5->Draw("SAME");
-  //hist8->Draw("SAME");
-  legend = new TLegend(0.35,0.75,0.6,0.85);
-  legend->AddEntry(hist2,"Tau -> 3 Mu MC","f");
+  hist5->Draw("SAME");
+  hist8->Draw("SAME");
+  //legend = new TLegend(0.35,0.75,0.6,0.85);
+  //legend->AddEntry(hist2,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist5,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist8,"Tau -> 3 Mu MC","f");
   //legend->Draw();
@@ -569,19 +756,24 @@ void selectMC(const TString conf="samples.conf", // input file
   xaxis = hist3->GetXaxis();
   yaxis = hist3->GetYaxis();
   xaxis->SetTitle("#eta");
-  yaxis->SetTitle("a.u");
+  yaxis->SetTitle("a.u.");
+  yaxis->SetTitleOffset(1.3);
+  yaxis->SetRangeUser(0,0.04);
   c2->cd();
-  hist3->SetLineColor(2);
-  hist6->SetLineColor(6);
+  hist3->SetLineColor(4);
+  hist6->SetLineColor(4);
   hist9->SetLineColor(4);
+  hist3->SetLineStyle(1);
+  hist6->SetLineStyle(2);
+  hist9->SetLineStyle(5);
   hist3->SetFillStyle(0);
   hist6->SetFillStyle(0);
   hist9->SetFillStyle(0);
   hist3->Draw();
-  //hist6->Draw("SAME");
-  //hist9->Draw("SAME");
-  legend = new TLegend(0.15,0.75,0.4,0.85);
-  legend->AddEntry(hist3,"Tau -> 3 Mu MC","f");
+  hist6->Draw("SAME");
+  hist9->Draw("SAME");
+  // legend = new TLegend(0.15,0.75,0.4,0.85);
+  //legend->AddEntry(hist3,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist6,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist9,"Tau -> 3 Mu MC","f");
   //legend->Draw();
@@ -591,16 +783,24 @@ void selectMC(const TString conf="samples.conf", // input file
   xaxis = hist4->GetXaxis();
   yaxis = hist4->GetYaxis();
   xaxis->SetTitle("#varphi");
-  yaxis->SetTitle("a.u / 0.28 rad");
+  yaxis->SetTitle("a.u. / 0.28 rad");
+  yaxis->SetTitleOffset(1.3);
+  yaxis->SetRangeUser(0,0.06);
   c3->cd();
-  hist4->SetLineColor(2);
-  hist7->SetLineColor(6);
+  hist4->SetLineColor(4);
+  hist7->SetLineColor(4);
   hist10->SetLineColor(4);
+  hist4->SetLineStyle(1);
+  hist7->SetLineStyle(2);
+  hist10->SetLineStyle(5);
+  hist4->SetFillStyle(0);
+  hist7->SetFillStyle(0);
+  hist10->SetFillStyle(0);
   hist4->Draw();
-  //hist7->Draw("SAME");
-  //hist10->Draw("SAME");
-  legend = new TLegend(0.15,0.75,0.4,0.85);
-  legend->AddEntry(hist4,"Tau -> 3 Mu MC","f");
+  hist7->Draw("SAME");
+  hist10->Draw("SAME");
+  //legend = new TLegend(0.15,0.75,0.4,0.85);
+  //legend->AddEntry(hist4,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist7,"Tau -> 3 Mu MC","f");
   //legend->AddEntry(hist10,"Tau -> 3 Mu MC","f");
   //legend->Draw();
