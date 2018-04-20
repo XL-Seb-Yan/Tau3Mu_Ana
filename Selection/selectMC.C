@@ -48,20 +48,20 @@ void selectMC(const TString conf="samples.conf", // input file
 	       const Bool_t  doScaleCorr=0   // apply energy scale corrections?
 	       ) {
   gBenchmark->Start("select3Mu");
-
+  gSystem->Load("/afs/cern.ch/work/x/xuyan/work4/CMSSW_8_0_27/src/Tau3Mu_Ana/Selection/lib/libMylib.so");
   //--------------------------------------------------------------------------------------------------------------
   // Settings 
   //============================================================================================================== 
-  TH1F* hist0 = new TH1F("tau -> 3 muon 0","GEN m_{#mu^{#pm}#mu^{pm}#mu^{#pm}}",50,0,5);
-  TH1F* hist2 = new TH1F("tau -> 3 muon 2","GEN p_{T}",75,0,15);
-  TH1F* hist3 = new TH1F("tau -> 3 muon 3","GEN #eta",50,-3,3);
-  TH1F* hist4 = new TH1F("tau -> 3 muon 4","GEN #varphi",25,-3.5,3.5);
-  TH1F* hist5 = new TH1F("tau -> 3 muon 5","GEN p_{T}",75,0,15);
-  TH1F* hist6 = new TH1F("tau -> 3 muon 6","GEN #eta",50,-3,3);
-  TH1F* hist7 = new TH1F("tau -> 3 muon 7","GEN #varphi",25,-3.5,3.5);
-  TH1F* hist8 = new TH1F("tau -> 3 muon 8","GEN p_{T}",75,0,15);
-  TH1F* hist9 = new TH1F("tau -> 3 muon 9","GEN #eta",50,-3,3);
-  TH1F* hist10 = new TH1F("tau -> 3 muon 10","GEN #varphi",25,-3.5,3.5);
+  TH1F* hist0 = new TH1F("tau -> 3 muon 0","RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",50,0,5);
+  TH1F* hist2 = new TH1F("tau -> 3 muon 2","RECO p_{T}",75,0,15);
+  TH1F* hist3 = new TH1F("tau -> 3 muon 3","RECO #eta",50,-3,3);
+  TH1F* hist4 = new TH1F("tau -> 3 muon 4","RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5 = new TH1F("tau -> 3 muon 5","RECO p_{T}",75,0,15);
+  TH1F* hist6 = new TH1F("tau -> 3 muon 6","RECO #eta",50,-3,3);
+  TH1F* hist7 = new TH1F("tau -> 3 muon 7","RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8 = new TH1F("tau -> 3 muon 8","RECO p_{T}",75,0,15);
+  TH1F* hist9 = new TH1F("tau -> 3 muon 9","RECO #eta",50,-3,3);
+  TH1F* hist10 = new TH1F("tau -> 3 muon 10","RECO #varphi",25,-3.5,3.5);
   UInt_t count1=0, count2=0, count3=0;
   gStyle->SetOptStat(0);
 
@@ -97,8 +97,8 @@ void selectMC(const TString conf="samples.conf", // input file
   baconhep::TGenEventInfo *geninfo  = new baconhep::TGenEventInfo();
   TClonesArray *genPartArr = new TClonesArray("baconhep::TGenParticle");
   TClonesArray *vertexArr  = new TClonesArray("baconhep::TVertex");
-  int* runnum = new int();
-  int* evtnum = new int();
+  UInt_t* runnum = new UInt_t();
+  UInt_t* evtnum = new UInt_t();
   std::vector<float> *muon_pt = new std::vector<float>();
   std::vector<float> *muon_eta = new std::vector<float>();
   std::vector<float> *muon_phi = new std::vector<float>();
@@ -134,7 +134,7 @@ void selectMC(const TString conf="samples.conf", // input file
   std::vector<unsigned int>   *muon_nPixLayers = new std::vector<unsigned int>();
   std::vector<unsigned int>   *muon_nMatchStn = new std::vector<unsigned int>();
   std::vector<int>   *muon_trkID = new std::vector<int>();
-  std::vector<int>   *muon_hltMatchBits = new std::vector<int>();
+  std::vector<TriggerObjects>   *muon_hltMatchBits = new std::vector<std::bitset<256> >();
   std::vector<float> *vf_tC = new std::vector<float>();
   std::vector<float> *vf_dOF = new std::vector<float>();
   std::vector<float> *vf_nC = new std::vector<float>();
@@ -214,6 +214,7 @@ void selectMC(const TString conf="samples.conf", // input file
       Bool_t hasGen = eventTree->GetBranchStatus("GenEvtInfo");
 
       for(UInt_t ientry=0; ientry<eventTree->GetEntries(); ientry++) {
+      //for(UInt_t ientry=0; ientry<10000; ientry++) {
         if(ientry%500==0) cout << "Processing event " << ientry << ". " << (double)ientry/(double)eventTree->GetEntries()*100 << " percent done with this file." << endl;
 
 	// Get Events
@@ -267,9 +268,10 @@ void selectMC(const TString conf="samples.conf", // input file
 	std::vector<float> pt, eta, phi, ptErr, staPt, staEta, staPhi, pfPt, pfEta, pfPhi;
 	std::vector<float> trkIso, ecalIso, hcalIso, chHadIso, gammaIso, neuHadIso, puIso, d0, dz, sip3d;
 	std::vector<float> tkNchi2, muNchi2, trkKink, glbKink;
-	std::vector<int> q, nValidHits, trkID, hltMatchBits, category;
+	std::vector<int> q, nValidHits, trkID, category;
 	std::vector<unsigned int> typeBits, selectorBits, pogIDBits, nTkHits, nPixHits, nTkLayers, nPixLayers, nMatchStn;
 	std::vector<float> tC, dOF, nC, Prob;
+	std::vector<TriggerObjects> hltMatchBits;
 
         for(vector<float>::iterator it = muon_pt->begin(); it != muon_pt->end(); it++)
 	  pt.push_back(*it);
@@ -333,7 +335,7 @@ void selectMC(const TString conf="samples.conf", // input file
 	  nValidHits.push_back(*it);
 	for(vector<int>::iterator it = muon_trkID->begin(); it != muon_trkID->end(); it++)
 	  trkID.push_back(*it);
-	for(vector<int>::iterator it = muon_hltMatchBits->begin(); it != muon_hltMatchBits->end(); it++)
+	for(vector<TriggerObjects>::iterator it = muon_hltMatchBits->begin(); it != muon_hltMatchBits->end(); it++)
 	  hltMatchBits.push_back(*it);	
 	for(vector<float>::iterator it = muon_tkNchi2->begin(); it != muon_tkNchi2->end(); it++)
 	  tkNchi2.push_back(*it);
@@ -398,15 +400,58 @@ void selectMC(const TString conf="samples.conf", // input file
 	  cout<<endl;
 	}
 	*/
+	
 	TLorentzVector v1,v2,v3;
+	int c1=0,c2=0;
 	for(int i=0; i<category.size(); i++){
 	  if(category[i] == 1){
-	    v1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658);
-	    v2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658);
-	    v3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658);
+	    c1++;
+	    v1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
+	    v2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
+	    v3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);
+
+	    // Mass cuts
+	    if(q[i*3] * q[i*3+1] < 0){
+	      double mass_temp = (v1+v2).M();
+	      if(mass_temp < 0.45) continue;
+	      if(abs(mass_temp - 0.782) < 0.02) continue;
+	    }
+	    if(q[i*3] * q[i*3+2] < 0){
+	      double mass_temp = (v1+v3).M();
+	      if(mass_temp < 0.45) continue;
+	      if(abs(mass_temp - 0.782) < 0.02) continue;
+	    }
+	    if(q[i*3+1] * q[i*3+2] < 0){
+	      double mass_temp = (v2+v3).M();
+	      if(mass_temp < 0.45) continue;
+	      if(abs(mass_temp - 0.782) < 0.02) continue;
+	    }
+	    cout<<ientry<<endl;
+	    
+	    bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3]));
+	    bool MuonTriObj2 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+1]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+1]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+1]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+1]));
+	    bool MuonTriObj3 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+2]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+2]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+2]) ||
+			  triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+2]));
+	    cout<<MuonTriObj1<<MuonTriObj2<<MuonTriObj3<<endl;
+	    if(!MuonTriObj1) continue;
+	    if(!MuonTriObj2) continue;
+	    if(!MuonTriObj3) continue;
+
+
+	    // Fill tree
 	    hist0->Fill((v1+v2+v3).M());
+	    count2++;
 	  }
 	}
+	cout<<category.size()<<" "<<c1<<endl;
       }//end of event loop
       
       hist0->Scale(1/hist0->GetEntries());
@@ -436,6 +481,7 @@ void selectMC(const TString conf="samples.conf", // input file
   //--------------------------------------------------------------------------------------------------------------
   // Output
   //==============================================================================================================
+  cout<<count1<<" "<<count2<<" "<<count3<<endl;
   
   //THStack *all = new THStack("tau -> 3 muons","invariant mass");
   TCanvas *c0 = new TCanvas("c0","invariant mass",1200,900);
@@ -496,7 +542,6 @@ void selectMC(const TString conf="samples.conf", // input file
   
 
   c0->Print("invariant mass.png");
-  cout<<count1<<" "<<count2<<" "<<count3<<endl;
   
   TCanvas *c1 = new TCanvas("1","muon pT",1200,900);
   xaxis = hist2->GetXaxis();
