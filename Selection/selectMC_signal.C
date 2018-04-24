@@ -169,6 +169,9 @@ void selectMC(const TString conf="samples.conf", // input file
   TFile *infile=0;
   TTree *eventTree=0;
 
+  // Data structure for output files.
+  float sysinvmass;
+
   // loop over samples
   for(UInt_t isam=0; isam<samplev.size(); isam++) {
     Bool_t isData=kFALSE;
@@ -176,6 +179,14 @@ void selectMC(const TString conf="samples.conf", // input file
     else if (isam==0) isData=kTRUE;
     Bool_t isSignal = (snamev[isam].CompareTo("dstau",TString::kIgnoreCase)==0);
     CSample* samp = samplev[isam];
+
+    //
+    // Set up output ntuple
+    TString outfilename = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select.root");
+    //if(isam!=0 && !doScaleCorr) outfilename = ntupDir + TString("/") + snamev[isam] + TString("_select.raw.root");
+    TFile *outFile = new TFile(outfilename,"RECREATE"); 
+    TTree *outTree = new TTree("Events","Events");
+    outTree->Branch("sysinvmass", &sysinvmass,"sysinvmass/F");
     cout<<"begin loop over files"<<endl;
 
     // loop through files
@@ -537,7 +548,11 @@ void selectMC(const TString conf="samples.conf", // input file
 	}
 	hist2->Fill(pt[sort[0]]); hist5->Fill(pt[sort[1]]); hist8->Fill(pt[sort[2]]);
 	hist3->Fill(eta[sort[0]]); hist6->Fill(eta[sort[1]]); hist9->Fill(eta[sort[2]]);
-	hist4->Fill(phi[sort[0]]); hist7->Fill(phi[sort[1]]); hist10->Fill(phi[sort[2]]);
+	hist4->Fill(phi[sort[0]]); hist7->Fill(phi[sort[1]]); hist10->Fill(phi[sort[2]]);\
+
+	// Fill output tree
+	sysinvmass = invmass;
+	outTree->Fill();
       }//end of event loop
       
       hist0->Scale(1/hist0->GetEntries());
@@ -558,6 +573,8 @@ void selectMC(const TString conf="samples.conf", // input file
       delete infile;
       infile=0, eventTree=0;    
     }
+    outFile->Write();
+    outFile->Close();
   }
   delete h_rw;
   delete h_rw_up;
