@@ -41,6 +41,8 @@
 #include "BaconAna/Utils/interface/RunLumiRangeMap.hh"
 #include "../Utils/LeptonIDCuts.hh" // helper functions for lepton ID selection
 #include "../Utils/MyTools.hh"      // various helper functions
+// C++ tool
+#include <algorithm>
 #endif
 
 void selectMC(const TString conf="samples.conf", // input file
@@ -53,7 +55,7 @@ void selectMC(const TString conf="samples.conf", // input file
   // Settings 
   //============================================================================================================== 
   //TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
-  TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
   TH1F* hist1a = new TH1F("tau -> 3 muon 1a","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
   TH1F* hist1b = new TH1F("tau -> 3 muon 1b","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
   TH1F* hist1c = new TH1F("tau -> 3 muon 1c","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
@@ -165,12 +167,25 @@ void selectMC(const TString conf="samples.conf", // input file
   std::vector<float> *vf_Prob = new std::vector<float>();
   std::vector<int>   *tri_category = new std::vector<int>();
   std::vector<int>   *vf_valid = new std::vector<int>();
+  std::vector<float> *vf_ip = new std::vector<float>();
+  std::vector<float> *tri_iso = new std::vector<float>();
+  std::vector<int>   *tri_isoNtrk = new std::vector<int>();
   std::vector<float> *tri_invmass = new std::vector<float>();
   TFile *infile=0;
   TTree *eventTree=0;
 
-  // Data structure for output files.
-  float sysinvmass;
+  // Data structure for output files for BDT training.
+  float BDT_mass;
+  // Kinematics
+  float BDT_ptMin, BDT_etaMax;
+  // muon ID
+  float BDT_trkKinkMax, BDT_d0Min, BDT_muNchi2Max, BDT_nMatchStnMin, BDT_nTkLayersMin;
+  // Vertex
+  float BDT_nC, BDT_vfIp;
+  // Isolation
+  float BDT_triIso, BDT_triIsoNtrk;
+  // Geometric
+  float BDT_deltaRMin, BDT_deltaRMax;
 
   // loop over samples
   for(UInt_t isam=0; isam<samplev.size(); isam++) {
@@ -180,13 +195,63 @@ void selectMC(const TString conf="samples.conf", // input file
     Bool_t isSignal = (snamev[isam].CompareTo("dstau",TString::kIgnoreCase)==0);
     CSample* samp = samplev[isam];
 
-    //
-    // Set up output ntuple
-    TString outfilename = ntupDir + TString("/") + snamev[isam] + TString("_Phipi_select.root");
-    //if(isam!=0 && !doScaleCorr) outfilename = ntupDir + TString("/") + snamev[isam] + TString("_select.raw.root");
-    TFile *outFile = new TFile(outfilename,"RECREATE"); 
-    TTree *outTree = new TTree("Events","Events");
-    outTree->Branch("sysinvmass", &sysinvmass,"sysinvmass/F");
+    // Set up output ntuple ----------- Mass resolution category 1 -----------------------------
+    TString outfilename1 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC1.root");
+    TFile *outFile1 = new TFile(outfilename1,"RECREATE"); 
+    TTree *outTree1 = new TTree("Events","Events");
+    outTree1->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
+    outTree1->Branch("BDT_ptMin", &BDT_ptMin,"BDT_ptMin/F");
+    outTree1->Branch("BDT_etaMax", &BDT_etaMax,"BDT_etaMax/F");
+    outTree1->Branch("BDT_trkKinkMax", &BDT_trkKinkMax,"BDT_trkKinkMax/F");
+    outTree1->Branch("BDT_d0Min", &BDT_d0Min,"BDT_d0Min/F");
+    outTree1->Branch("BDT_muNchi2Max", &BDT_muNchi2Max,"BDT_muNchi2Max/F");
+    outTree1->Branch("BDT_nMatchStnMin", &BDT_nMatchStnMin,"BDT_nMatchStnMin/F");
+    outTree1->Branch("BDT_nTkLayersMin", &BDT_nTkLayersMin,"BDT_nTkLayersMin/F");
+    outTree1->Branch("BDT_nC", &BDT_nC,"BDT_nC/F");
+    outTree1->Branch("BDT_deltaRMin", &BDT_deltaRMin,"BDT_deltaRMin/F");
+    outTree1->Branch("BDT_deltaRMax", &BDT_deltaRMax,"BDT_deltaRMax/F");
+    outTree1->Branch("BDT_vfIp", &BDT_vfIp,"BDT_vfIp/F");
+    outTree1->Branch("BDT_triIso", &BDT_triIso,"BDT_triIso/F");
+    outTree1->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
+
+    // Set up output ntuple ----------- Mass resolution category 2 -----------------------------
+    TString outfilename2 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC2.root");
+    TFile *outFile2 = new TFile(outfilename2,"RECREATE"); 
+    TTree *outTree2 = new TTree("Events","Events");
+    outTree2->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
+    outTree2->Branch("BDT_ptMin", &BDT_ptMin,"BDT_ptMin/F");
+    outTree2->Branch("BDT_etaMax", &BDT_etaMax,"BDT_etaMax/F");
+    outTree2->Branch("BDT_trkKinkMax", &BDT_trkKinkMax,"BDT_trkKinkMax/F");
+    outTree2->Branch("BDT_d0Min", &BDT_d0Min,"BDT_d0Min/F");
+    outTree2->Branch("BDT_muNchi2Max", &BDT_muNchi2Max,"BDT_muNchi2Max/F");
+    outTree2->Branch("BDT_nMatchStnMin", &BDT_nMatchStnMin,"BDT_nMatchStnMin/F");
+    outTree2->Branch("BDT_nTkLayersMin", &BDT_nTkLayersMin,"BDT_nTkLayersMin/F");
+    outTree2->Branch("BDT_nC", &BDT_nC,"BDT_nC/F");
+    outTree2->Branch("BDT_deltaRMin", &BDT_deltaRMin,"BDT_deltaRMin/F");
+    outTree2->Branch("BDT_deltaRMax", &BDT_deltaRMax,"BDT_deltaRMax/F");
+    outTree2->Branch("BDT_vfIp", &BDT_vfIp,"BDT_vfIp/F");
+    outTree2->Branch("BDT_triIso", &BDT_triIso,"BDT_triIso/F");
+    outTree2->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
+
+    // Set up output ntuple ----------- Mass resolution category 3 -----------------------------
+    TString outfilename3 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC3.root");
+    TFile *outFile3 = new TFile(outfilename3,"RECREATE"); 
+    TTree *outTree3 = new TTree("Events","Events");
+    outTree3->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
+    outTree3->Branch("BDT_ptMin", &BDT_ptMin,"BDT_ptMin/F");
+    outTree3->Branch("BDT_etaMax", &BDT_etaMax,"BDT_etaMax/F");
+    outTree3->Branch("BDT_trkKinkMax", &BDT_trkKinkMax,"BDT_trkKinkMax/F");
+    outTree3->Branch("BDT_d0Min", &BDT_d0Min,"BDT_d0Min/F");
+    outTree3->Branch("BDT_muNchi2Max", &BDT_muNchi2Max,"BDT_muNchi2Max/F");
+    outTree3->Branch("BDT_nMatchStnMin", &BDT_nMatchStnMin,"BDT_nMatchStnMin/F");
+    outTree3->Branch("BDT_nTkLayersMin", &BDT_nTkLayersMin,"BDT_nTkLayersMin/F");
+    outTree3->Branch("BDT_nC", &BDT_nC,"BDT_nC/F");
+    outTree3->Branch("BDT_deltaRMin", &BDT_deltaRMin,"BDT_deltaRMin/F");
+    outTree3->Branch("BDT_deltaRMax", &BDT_deltaRMax,"BDT_deltaRMax/F");
+    outTree3->Branch("BDT_vfIp", &BDT_vfIp,"BDT_vfIp/F");
+    outTree3->Branch("BDT_triIso", &BDT_triIso,"BDT_triIso/F");
+    outTree3->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
+    
     cout<<"begin loop over files"<<endl;
 
     // loop through files
@@ -249,6 +314,9 @@ void selectMC(const TString conf="samples.conf", // input file
       eventTree->SetBranchAddress("VfProb", &vf_Prob);                        TBranch *vfProbBr = eventTree->GetBranch("VfProb");
       eventTree->SetBranchAddress("Category", &tri_category);                 TBranch *triCategoryBr = eventTree->GetBranch("Category");
       eventTree->SetBranchAddress("VfValid", &vf_valid);                      TBranch *vfValidBr = eventTree->GetBranch("VfValid");
+      eventTree->SetBranchAddress("VfIp", &vf_ip);                            TBranch *vfIpBr = eventTree->GetBranch("VfIp");
+      eventTree->SetBranchAddress("TriIso", &tri_iso);                        TBranch *triIsoBr = eventTree->GetBranch("TriIso");
+      eventTree->SetBranchAddress("TriIsoNtrk", &tri_isoNtrk);                TBranch *triIsoNtrkBr = eventTree->GetBranch("TriIsoNtrk");
       eventTree->SetBranchAddress("InvMass", &tri_invmass);                   TBranch *triInvMassBr = eventTree->GetBranch("InvMass");
       Bool_t hasGen = eventTree->GetBranchStatus("GenEvtInfo");
 
@@ -304,14 +372,17 @@ void selectMC(const TString conf="samples.conf", // input file
 	vf_Prob->clear();                vfProbBr->GetEntry(ientry);
 	vf_valid->clear();               vfValidBr->GetEntry(ientry);
 	tri_category->clear();           triCategoryBr->GetEntry(ientry);
+	vf_ip->clear();                  vfIpBr->GetEntry(ientry);
+	tri_iso->clear();                triIsoBr->GetEntry(ientry);
+	tri_isoNtrk->clear();            triIsoNtrkBr->GetEntry(ientry);
 	tri_invmass->clear();            triInvMassBr->GetEntry(ientry);
 
 	std::vector<float> pt, eta, phi, ptErr, staPt, staEta, staPhi, pfPt, pfEta, pfPhi;
 	std::vector<float> trkIso, ecalIso, hcalIso, chHadIso, gammaIso, neuHadIso, puIso, d0, dz, sip3d;
 	std::vector<float> tkNchi2, muNchi2, trkKink, glbKink;
-	std::vector<int> q, nValidHits, trkID, category, Valid;
+	std::vector<int> q, nValidHits, trkID, category, Valid, triIsoNtrk;
 	std::vector<unsigned int> typeBits, selectorBits, pogIDBits, nTkHits, nPixHits, nTkLayers, nPixLayers, nMatchStn;
-	std::vector<float> tC, dOF, nC, Prob, invMass;
+	std::vector<float> tC, dOF, nC, Prob, vfIp, triIso, invMass;
 	std::vector<TriggerObjects> hltMatchBits;
 
         for(vector<float>::iterator it = muon_pt->begin(); it != muon_pt->end(); it++)
@@ -400,6 +471,12 @@ void selectMC(const TString conf="samples.conf", // input file
 	  invMass.push_back(*it);
 	for(vector<int>::iterator it = vf_valid->begin(); it != vf_valid->end(); it++)
 	  Valid.push_back(*it);
+	for(vector<float>::iterator it = vf_ip->begin(); it != vf_ip->end(); it++)
+	  vfIp.push_back(*it);
+	for(vector<float>::iterator it = tri_iso->begin(); it != tri_iso->end(); it++)
+	  triIso.push_back(*it);
+	for(vector<int>::iterator it = tri_isoNtrk->begin(); it != tri_isoNtrk->end(); it++)
+	  triIsoNtrk.push_back(*it);
 
 	//Store GEN level tau muon
 	vector<baconhep::TGenParticle*> genmuonArr;
@@ -417,28 +494,54 @@ void selectMC(const TString conf="samples.conf", // input file
 	count1++;
 	
 	TLorentzVector temp1,temp2,temp3;
-	float minmass = 0;
+	float massdiff = 99;
 	int maxmassnum = -99;
 	for(int i=0; i<category.size(); i++){
 	  temp1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
 	  temp2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
 	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);//0.13957
 	  float invmass_temp = (temp1+temp2+temp3).M();
-
+	  
 	  if(category[i] != 1) continue;
 
-	  if(q[i*3] * q[i*3+1] > 0) continue;
-
 	  // Mass cuts
-	  double mass_temp = (temp1+temp2).M();
-	  if(mass_temp < 0.45) continue;
-	  if(abs(mass_temp - 0.782) < 0.02) continue;
+	  if(q[i*3] * q[i*3+1] < 0){
+	    double mass_temp = (temp1+temp2).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
+	  if(q[i*3] * q[i*3+2] < 0){
+	    double mass_temp = (temp1+temp3).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
+	  if(q[i*3+1] * q[i*3+2] < 0){
+	    double mass_temp = (temp2+temp3).M();
+	    if(mass_temp < 0.45) continue;
+	    if(abs(mass_temp - 0.782) < 0.02) continue;
+	  }
 
-	  if(mass_temp > 1.12 || mass_temp < 0.92) continue;	  
+	  // Sign Check
+	  int Ssign = q[i*3] + q[i*3+1] + q[i*3+2];
+	  if(Ssign != -1 && Ssign != 1) continue;
+
 	  if(!Valid[i]) continue;
 
-	  hist0->Fill(invmass_temp);
-	  /*
+	  // GEN-RECO matching
+	  // Calculate deltaR
+	  float deltaR11 = toolbox::deltaR(eta[i*3],phi[i*3],genmuonArr[0]->eta, genmuonArr[0]->phi);
+	  float deltaR12 = toolbox::deltaR(eta[i*3],phi[i*3],genmuonArr[1]->eta, genmuonArr[1]->phi);
+	  float deltaR13 = toolbox::deltaR(eta[i*3],phi[i*3],genmuonArr[2]->eta, genmuonArr[2]->phi);
+	  float deltaR21 = toolbox::deltaR(eta[i*3+1],phi[i*3+1],genmuonArr[0]->eta, genmuonArr[0]->phi);
+	  float deltaR22 = toolbox::deltaR(eta[i*3+1],phi[i*3+1],genmuonArr[1]->eta, genmuonArr[1]->phi);
+	  float deltaR23 = toolbox::deltaR(eta[i*3+1],phi[i*3+1],genmuonArr[2]->eta, genmuonArr[2]->phi);
+	  float deltaR31 = toolbox::deltaR(eta[i*3+2],phi[i*3+2],genmuonArr[0]->eta, genmuonArr[0]->phi);
+	  float deltaR32 = toolbox::deltaR(eta[i*3+2],phi[i*3+2],genmuonArr[1]->eta, genmuonArr[1]->phi);
+	  float deltaR33 = toolbox::deltaR(eta[i*3+2],phi[i*3+2],genmuonArr[2]->eta, genmuonArr[2]->phi);
+	  // Simple matching, require each RECO muon to be close to at least on of the GEN muons (deltaR < 0.025)
+	  if (deltaR11 > 0.025 && deltaR12 > 0.025 && deltaR13 > 0.025) continue;
+	  if (deltaR21 > 0.025 && deltaR22 > 0.025 && deltaR23 > 0.025) continue;
+	  if (deltaR31 > 0.025 && deltaR32 > 0.025 && deltaR33 > 0.025) continue;
 	  
 	  bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
 			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
@@ -456,24 +559,87 @@ void selectMC(const TString conf="samples.conf", // input file
 	  if(!MuonTriObj1) continue;
 	  if(!MuonTriObj2) continue;
 	  if(!MuonTriObj3) continue;
-	  */
-	  
-	  if(invmass_temp > minmass){
-	    minmass = invmass_temp;
+
+	  if(abs(invmass_temp - 1.77632) < massdiff){
+	    massdiff = abs(invmass_temp - 1.77632);
 	    maxmassnum = i;
 	  }
 	}
 	if(maxmassnum < 0) continue;
 
-	// Fill histogram
-	// Mass
 	TLorentzVector v1,v2,v3;
 	v1.SetPtEtaPhiM(pt[maxmassnum*3],eta[maxmassnum*3],phi[maxmassnum*3],0.105658369);
 	v2.SetPtEtaPhiM(pt[maxmassnum*3+1],eta[maxmassnum*3+1],phi[maxmassnum*3+1],0.105658369);
-	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.13957);
+	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.105658369);
 	float invmass = (v1+v2+v3).M();
-	hist0->Fill(invmass);
-	count2++;
+
+	// Sorting variables for BDT --------------------------------------------------
+	//Sort muon pt order
+	int sort_pt[3]={-99,-99,-99};
+	Double_t maxpt=-99, submaxpt=-99;
+	for(int i=0; i<3; i++){
+	  if(pt[maxmassnum*3+i] >= maxpt){
+	    submaxpt = maxpt;
+	    maxpt = pt[maxmassnum*3+i];
+	    sort_pt[2] = sort_pt[1];
+	    sort_pt[1] = sort_pt[0];
+	    sort_pt[0] = maxmassnum*3+i;
+	  }
+	  else if(pt[maxmassnum*3+i] < maxpt && pt[maxmassnum*3+i] >= submaxpt){
+	    submaxpt = pt[maxmassnum*3+i];
+	    sort_pt[2] = sort_pt[1];
+	    sort_pt[1] = maxmassnum*3+i;
+	  }
+	  else{
+	    sort_pt[2] = maxmassnum*3+i;
+	  }
+	}
+
+	//Sort muon eta order
+	float sort_eta[3];
+	for(int i=0; i<3; i++)
+	  sort_eta[i] = abs(eta[maxmassnum*3+i]); //Note we take the absolute value here
+	std::sort(sort_eta,sort_eta+3);
+	if(ientry<20) std::cout<<sort_eta[0]<<" "<<sort_eta[1]<<" "<<sort_eta[2]<<std::endl;
+
+	//Sort muon trkKink order
+	float sort_trkKink[3];
+	for(int i=0; i<3; i++)
+	  sort_trkKink[i] = trkKink[maxmassnum*3+i];
+	std::sort(sort_trkKink,sort_trkKink+3);
+
+	//Sort muon d0 order
+	float sort_d0[3];
+	for(int i=0; i<3; i++)
+	  sort_d0[i] = d0[maxmassnum*3+i];
+	std::sort(sort_d0,sort_d0+3);
+
+	//Sort muon muNchi2 order
+	float sort_muNchi2[3];
+	for(int i=0; i<3; i++)
+	  sort_muNchi2[i] = muNchi2[maxmassnum*3+i];
+	std::sort(sort_muNchi2,sort_muNchi2+3);
+
+	//Sort muon nMatchStn order
+	float sort_nMatchStn[3];
+	for(int i=0; i<3; i++)
+	  sort_nMatchStn[i] = nMatchStn[maxmassnum*3+i];
+	std::sort(sort_nMatchStn,sort_nMatchStn+3);
+
+	//Sort muon nTkLayers order
+	float sort_nTkLayers[3];
+	for(int i=0; i<3; i++)
+	  sort_nTkLayers[i] = nTkLayers[maxmassnum*3+i];
+	std::sort(sort_nTkLayers,sort_nTkLayers+3);
+
+	//Sort di-mu deltaR order
+	float sort_deltaR[3];
+	sort_deltaR[0] = toolbox::deltaR(eta[maxmassnum*3], phi[maxmassnum*3], eta[maxmassnum*3+1], phi[maxmassnum*3+1]);
+	sort_deltaR[1] = toolbox::deltaR(eta[maxmassnum*3], phi[maxmassnum*3], eta[maxmassnum*3+2], phi[maxmassnum*3+2]);
+	sort_deltaR[2] = toolbox::deltaR(eta[maxmassnum*3+1], phi[maxmassnum*3+1], eta[maxmassnum*3+2], phi[maxmassnum*3+2]);
+	std::sort(sort_deltaR,sort_deltaR+3);
+
+	// Fill output files for BDT of different mass resolution category
 	Int_t B = 0;
 	Int_t M = 0;
 	Int_t E = 0;
@@ -486,68 +652,79 @@ void selectMC(const TString conf="samples.conf", // input file
 	if (fabs(eta[maxmassnum*3])>=1.6) E++;
 	if (fabs(eta[maxmassnum*3+1])>=1.6) E++;
 	if (fabs(eta[maxmassnum*3+2])>=1.6) E++;
-	if (B==3){
+	if (B==3||(B==2&&M==1)||(B==2&&E==1)){
 	  count3++;
-	  hist1a->Fill(invmass);}//store events come from tau
-	else if(B==2&&M==1){
-	  count3++;
-	  hist1a->Fill(invmass);}
-	else if(B==2&&E==1){
-	  count3++;
-	  hist1a->Fill(invmass);}
-	else if(M==3){
+	  hist1a->Fill(invmass);
+	  // Fill output tree
+	  BDT_mass = invmass;
+	  BDT_ptMin = pt[sort_pt[2]];
+	  BDT_etaMax = sort_eta[2];
+	  BDT_trkKinkMax = sort_trkKink[2];
+	  BDT_d0Min = sort_d0[0];
+	  BDT_muNchi2Max = sort_muNchi2[2];
+	  BDT_nMatchStnMin = sort_nMatchStn[0];
+	  BDT_nTkLayersMin = sort_nTkLayers[0];
+	  BDT_nC = nC[maxmassnum];
+	  BDT_deltaRMin = sort_deltaR[0];
+	  BDT_deltaRMax = sort_deltaR[2];
+	  BDT_vfIp = vfIp[maxmassnum];
+	  BDT_triIso = triIso[maxmassnum];
+	  BDT_triIsoNtrk = triIsoNtrk[maxmassnum];
+	  outTree1->Fill();
+	}
+	else if(M==3||(M==2&&B==1)||(M==2&&E==1)){
 	  count4++;
-	  hist1b->Fill(invmass);}
-	else if(M==2&&B==1){
-	  count4++;
-	  hist1b->Fill(invmass);}
-	else if(M==2&&E==1){
-	  count4++;
-	  hist1b->Fill(invmass);}
-	else if(E==3){
+	  hist1b->Fill(invmass);
+	  // Fill output tree
+	  BDT_mass = invmass;
+	  BDT_ptMin = pt[sort_pt[2]];
+	  BDT_etaMax = sort_eta[2];
+	  BDT_trkKinkMax = sort_trkKink[2];
+	  BDT_d0Min = sort_d0[0];
+	  BDT_muNchi2Max = sort_muNchi2[2];
+	  BDT_nMatchStnMin = sort_nMatchStn[0];
+	  BDT_nTkLayersMin = sort_nTkLayers[0];
+	  BDT_nC = nC[maxmassnum];
+	  BDT_deltaRMin = sort_deltaR[0];
+	  BDT_deltaRMax = sort_deltaR[2];
+	  BDT_vfIp = vfIp[maxmassnum];
+	  BDT_triIso = triIso[maxmassnum];
+	  BDT_triIsoNtrk = triIsoNtrk[maxmassnum];
+	  outTree2->Fill();
+	}
+	else if(E==3||(E==2&&B==1)||(E==2&&M==1)){
 	  count5++;
-	  hist1c->Fill(invmass);}
-	else if(E==2&&B==1){
-	  count5++;
-	  hist1c->Fill(invmass);}
-	else if(E==2&&M==1){
-	  count5++;
-	  hist1c->Fill(invmass);}
-	else if(B==1&&M==1&&E==1){
-	  hist1d->Fill(invmass);
-	  count6++;}	      
+	  hist1c->Fill(invmass);
+	  // Fill output tree
+	  BDT_mass = invmass;
+	  BDT_ptMin = pt[sort_pt[2]];
+	  BDT_etaMax = sort_eta[2];
+	  BDT_trkKinkMax = sort_trkKink[2];
+	  BDT_d0Min = sort_d0[0];
+	  BDT_muNchi2Max = sort_muNchi2[2];
+	  BDT_nMatchStnMin = sort_nMatchStn[0];
+	  BDT_nTkLayersMin = sort_nTkLayers[0];
+	  BDT_nC = nC[maxmassnum];
+	  BDT_deltaRMin = sort_deltaR[0];
+	  BDT_deltaRMax = sort_deltaR[2];
+	  BDT_vfIp = vfIp[maxmassnum];
+	  BDT_triIso = triIso[maxmassnum];
+	  BDT_triIsoNtrk = triIsoNtrk[maxmassnum];
+	  outTree3->Fill();
+	}
 	else{
-	  cout<<B<<M<<E<<endl;
-	}
+	  hist1d->Fill(invmass);
+	  count6++;
+	}	      
+	
+	// Fill histogram for all ---------------------------------------------------
+	hist0->Fill(invmass);
+	hist2->Fill(pt[sort_pt[0]]); hist5->Fill(pt[sort_pt[1]]); hist8->Fill(pt[sort_pt[2]]);
+	hist3->Fill(eta[sort_pt[0]]); hist6->Fill(eta[sort_pt[1]]); hist9->Fill(eta[sort_pt[2]]);
+	hist4->Fill(phi[sort_pt[0]]); hist7->Fill(phi[sort_pt[1]]); hist10->Fill(phi[sort_pt[2]]);
+	count2++;
 
-	// Kinematics
-	//Sort muon array
-	int sort[3]={-99,-99,-99};
-	Double_t maxpt=-99, submaxpt=-99;
-	for(int l=0; l<3; l++){
-	  if(pt[maxmassnum*3+l] >= maxpt){
-	    submaxpt = maxpt;
-	    maxpt = pt[maxmassnum*3+l];
-	    sort[2] = sort[1];
-	    sort[1] = sort[0];
-	    sort[0] = maxmassnum*3+l;
-	  }
-	  else if(pt[maxmassnum*3+l] < maxpt && pt[maxmassnum*3+l] >= submaxpt){
-	    submaxpt = pt[maxmassnum*3+l];
-	    sort[2] = sort[1];
-	    sort[1] = maxmassnum*3+l;
-	  }
-	  else{
-	    sort[2] = maxmassnum*3+l;
-	  }
-	}
-	hist2->Fill(pt[sort[0]]); hist5->Fill(pt[sort[1]]); hist8->Fill(pt[sort[2]]);
-	hist3->Fill(eta[sort[0]]); hist6->Fill(eta[sort[1]]); hist9->Fill(eta[sort[2]]);
-	hist4->Fill(phi[sort[0]]); hist7->Fill(phi[sort[1]]); hist10->Fill(phi[sort[2]]);\
-
-	// Fill output tree
-	sysinvmass = invmass;
-	outTree->Fill();
+       
       }//end of event loop
       
       hist0->Scale(1/hist0->GetEntries());
@@ -568,8 +745,12 @@ void selectMC(const TString conf="samples.conf", // input file
       delete infile;
       infile=0, eventTree=0;    
     }
-    outFile->Write();
-    outFile->Close();
+    outFile1->Write();
+    outFile1->Close();
+    outFile2->Write();
+    outFile2->Close();
+    outFile3->Write();
+    outFile3->Close();
   }
   delete h_rw;
   delete h_rw_up;
@@ -589,7 +770,7 @@ void selectMC(const TString conf="samples.conf", // input file
   TCanvas *c0 = new TCanvas("c0","invariant mass",1200,900);
   TAxis *xaxis = hist0->GetXaxis();
   TAxis *yaxis = hist0->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0->cd();
@@ -664,7 +845,7 @@ void selectMC(const TString conf="samples.conf", // input file
   TCanvas *c0b = new TCanvas("c0b","invariant mass",1200,900);
   xaxis = hist1b->GetXaxis();
   yaxis = hist1b->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0b->cd();
@@ -682,7 +863,7 @@ void selectMC(const TString conf="samples.conf", // input file
   TCanvas *c0c = new TCanvas("c0c","invariant mass",1200,900);
   xaxis = hist1c->GetXaxis();
   yaxis = hist1c->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0c->cd();
@@ -701,7 +882,7 @@ void selectMC(const TString conf="samples.conf", // input file
   cout<<hist1d->GetEntries()<<endl;
   xaxis = hist1d->GetXaxis();
   yaxis = hist1d->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
   yaxis->SetTitle("a.u. / 1 GeV");
   yaxis->SetTitleOffset(1.3);
   c0d->cd();

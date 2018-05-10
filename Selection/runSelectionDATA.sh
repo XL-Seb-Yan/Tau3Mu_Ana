@@ -8,4 +8,4 @@ LUMI=2215
 
 root -l -q selectDATA.C+\(\"samplesDATA.conf\",\"${NTUPDIR}\",0\)
 
-rm *.so *.d
+rm *.so *.d *.pcm

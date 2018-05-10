@@ -8,4 +8,4 @@ LUMI=2215
 
 root -l -q selectMC.C+\(\"samplesMC.conf\",\"${NTUPDIR}\",0\)
 
-rm *.so *.d
+rm *.so *.d *.pcm
