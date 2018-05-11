@@ -45,51 +45,50 @@
 #include <algorithm>
 #endif
 
-void selectDATA(const TString conf="samples.conf", // input file
+void selectMC(const TString conf="samples.conf", // input file
 	       const TString outputDir=".",  // output directory
 	       const Bool_t  doScaleCorr=0   // apply energy scale corrections?
 	       ) {
   gBenchmark->Start("select3Mu");
-  gSystem->Load("/afs/cern.ch/work/x/xuyan/work4/CMSSW_8_0_27/src/Tau3Mu_Ana/Selection/lib/libMylib.so");
   //--------------------------------------------------------------------------------------------------------------
   // Settings 
   //============================================================================================================== 
-  //TH1F* hist0 = new TH1F("tau -> 3 muon 0","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
-  TH1F* hist0 = new TH1F("tau -> 3 muon 0","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",100,1.5,2);
-  TH1F* hist1a = new TH1F("tau -> 3 muon 1a","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1b = new TH1F("tau -> 3 muon 1b","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1c = new TH1F("tau -> 3 muon 1c","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1d = new TH1F("tau -> 3 muon 1d","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",50,0,50);
+  //TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
+  TH1F* hist0 = new TH1F("tau -> 3 muon 0","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1a = new TH1F("tau -> 3 muon 1a","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1b = new TH1F("tau -> 3 muon 1b","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1c = new TH1F("tau -> 3 muon 1c","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1d = new TH1F("tau -> 3 muon 1d","MC RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",50,0,50);
   
-  TH1F* hist2 = new TH1F("tau -> 3 muon 2","DATA RECO p_{T}",125,0,25);
-  TH1F* hist3 = new TH1F("tau -> 3 muon 3","DATA RECO #eta",50,-3,3);
-  TH1F* hist4 = new TH1F("tau -> 3 muon 4","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist5 = new TH1F("tau -> 3 muon 5","DATA RECO p_{T}",125,0,25);
-  TH1F* hist6 = new TH1F("tau -> 3 muon 6","DATA RECO #eta",50,-3,3);
-  TH1F* hist7 = new TH1F("tau -> 3 muon 7","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist8 = new TH1F("tau -> 3 muon 8","DATA RECO p_{T}",125,0,25);
-  TH1F* hist9 = new TH1F("tau -> 3 muon 9","DATA RECO #eta",50,-3,3);
-  TH1F* hist10 = new TH1F("tau -> 3 muon 10","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist2b = new TH1F("tau -> 3 muon 2b","DATA RECO p_{T}",125,0,255);
-  TH1F* hist3b = new TH1F("tau -> 3 muon 3b","DATA RECO #eta",50,-3,3);
-  TH1F* hist4b = new TH1F("tau -> 3 muon 4b","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist5b = new TH1F("tau -> 3 muon 5b","DATA RECO p_{T}",125,0,25);
-  TH1F* hist6b = new TH1F("tau -> 3 muon 6b","DATA RECO #eta",50,-3,3);
-  TH1F* hist7b = new TH1F("tau -> 3 muon 7b","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist8b = new TH1F("tau -> 3 muon 8b","DATA RECO p_{T}",125,0,25);
-  TH1F* hist9b = new TH1F("tau -> 3 muon 9b","DATA RECO #eta",50,-3,3);
-  TH1F* hist10b = new TH1F("tau -> 3 muon 10b","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist2c = new TH1F("tau -> 3 muon 2c","DATA RECO p_{T}",125,0,25);
-  TH1F* hist3c = new TH1F("tau -> 3 muon 3c","DATA RECO #eta",50,-3,3);
-  TH1F* hist4c = new TH1F("tau -> 3 muon 4c","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist5c = new TH1F("tau -> 3 muon 5c","DATA RECO p_{T}",125,0,25);
-  TH1F* hist6c = new TH1F("tau -> 3 muon 6c","DATA RECO #eta",50,-3,3);
-  TH1F* hist7c = new TH1F("tau -> 3 muon 7c","DATA RECO #varphi",25,-3.5,3.5);
-  TH1F* hist8c = new TH1F("tau -> 3 muon 8c","DATA RECO p_{T}",125,0,25);
-  TH1F* hist9c = new TH1F("tau -> 3 muon 9c","DATA RECO #eta",50,-3,3);
-  TH1F* hist10c = new TH1F("tau -> 3 muon 10c","DATA RECO #varphi",25,-3.5,3.5);
+  TH1F* hist2 = new TH1F("tau -> 3 muon 2","MC RECO p_{T}",125,0,25);
+  TH1F* hist3 = new TH1F("tau -> 3 muon 3","MC RECO #eta",50,-3,3);
+  TH1F* hist4 = new TH1F("tau -> 3 muon 4","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5 = new TH1F("tau -> 3 muon 5","MC RECO p_{T}",125,0,25);
+  TH1F* hist6 = new TH1F("tau -> 3 muon 6","MC RECO #eta",50,-3,3);
+  TH1F* hist7 = new TH1F("tau -> 3 muon 7","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8 = new TH1F("tau -> 3 muon 8","MC RECO p_{T}",125,0,25);
+  TH1F* hist9 = new TH1F("tau -> 3 muon 9","MC RECO #eta",50,-3,3);
+  TH1F* hist10 = new TH1F("tau -> 3 muon 10","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist2b = new TH1F("tau -> 3 muon 2b","MC RECO p_{T}",125,0,255);
+  TH1F* hist3b = new TH1F("tau -> 3 muon 3b","MC RECO #eta",50,-3,3);
+  TH1F* hist4b = new TH1F("tau -> 3 muon 4b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5b = new TH1F("tau -> 3 muon 5b","MC RECO p_{T}",125,0,25);
+  TH1F* hist6b = new TH1F("tau -> 3 muon 6b","MC RECO #eta",50,-3,3);
+  TH1F* hist7b = new TH1F("tau -> 3 muon 7b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8b = new TH1F("tau -> 3 muon 8b","MC RECO p_{T}",125,0,25);
+  TH1F* hist9b = new TH1F("tau -> 3 muon 9b","MC RECO #eta",50,-3,3);
+  TH1F* hist10b = new TH1F("tau -> 3 muon 10b","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist2c = new TH1F("tau -> 3 muon 2c","MC RECO p_{T}",125,0,25);
+  TH1F* hist3c = new TH1F("tau -> 3 muon 3c","MC RECO #eta",50,-3,3);
+  TH1F* hist4c = new TH1F("tau -> 3 muon 4c","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist5c = new TH1F("tau -> 3 muon 5c","MC RECO p_{T}",125,0,25);
+  TH1F* hist6c = new TH1F("tau -> 3 muon 6c","MC RECO #eta",50,-3,3);
+  TH1F* hist7c = new TH1F("tau -> 3 muon 7c","MC RECO #varphi",25,-3.5,3.5);
+  TH1F* hist8c = new TH1F("tau -> 3 muon 8c","MC RECO p_{T}",125,0,25);
+  TH1F* hist9c = new TH1F("tau -> 3 muon 9c","MC RECO #eta",50,-3,3);
+  TH1F* hist10c = new TH1F("tau -> 3 muon 10c","MC RECO #varphi",25,-3.5,3.5);
   UInt_t count1=0, count2=0, count3=0, count4=0, count5=0, count6=0;
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(111111);
 
   
   // load trigger menu
@@ -120,6 +119,8 @@ void selectDATA(const TString conf="samples.conf", // input file
   
   // Data structures to store info from TTrees
   baconhep::TEventInfo *info  = new baconhep::TEventInfo();
+  baconhep::TGenEventInfo *geninfo  = new baconhep::TGenEventInfo();
+  TClonesArray *genPartArr = new TClonesArray("baconhep::TGenParticle");
   TClonesArray *vertexArr  = new TClonesArray("baconhep::TVertex");
   UInt_t* runnum = new UInt_t();
   UInt_t* evtnum = new UInt_t();
@@ -158,13 +159,11 @@ void selectDATA(const TString conf="samples.conf", // input file
   std::vector<unsigned int>   *muon_nPixLayers = new std::vector<unsigned int>();
   std::vector<unsigned int>   *muon_nMatchStn = new std::vector<unsigned int>();
   std::vector<int>   *muon_trkID = new std::vector<int>();
-  std::vector<TriggerObjects>   *muon_hltMatchBits = new std::vector<std::bitset<256> >();
   std::vector<float> *vf_tC = new std::vector<float>();
   std::vector<float> *vf_dOF = new std::vector<float>();
   std::vector<float> *vf_nC = new std::vector<float>();
   std::vector<float> *vf_Prob = new std::vector<float>();
   std::vector<int>   *tri_category = new std::vector<int>();
-  std::vector<int>   *vf_valid = new std::vector<int>();
   std::vector<float> *vf_ip = new std::vector<float>();
   std::vector<float> *tri_iso = new std::vector<float>();
   std::vector<int>   *tri_isoNtrk = new std::vector<int>();
@@ -194,7 +193,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     CSample* samp = samplev[isam];
 
     // Set up output ntuple ----------- Mass resolution category 1 -----------------------------
-    TString outfilename1 = ntupDir + TString("/") + snamev[isam] + TString("_evaluation_select_MRC1.root");
+    TString outfilename1 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC1.root");
     TFile *outFile1 = new TFile(outfilename1,"RECREATE"); 
     TTree *outTree1 = new TTree("Events","Events");
     outTree1->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -213,7 +212,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     outTree1->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
 
     // Set up output ntuple ----------- Mass resolution category 2 -----------------------------
-    TString outfilename2 = ntupDir + TString("/") + snamev[isam] + TString("_evaluation_select_MRC2.root");
+    TString outfilename2 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC2.root");
     TFile *outFile2 = new TFile(outfilename2,"RECREATE"); 
     TTree *outTree2 = new TTree("Events","Events");
     outTree2->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -232,7 +231,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     outTree2->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
 
     // Set up output ntuple ----------- Mass resolution category 3 -----------------------------
-    TString outfilename3 = ntupDir + TString("/") + snamev[isam] + TString("_evaluation_select_MRC3.root");
+    TString outfilename3 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC3.root");
     TFile *outFile3 = new TFile(outfilename3,"RECREATE"); 
     TTree *outTree3 = new TTree("Events","Events");
     outTree3->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -267,7 +266,9 @@ void selectDATA(const TString conf="samples.conf", // input file
       eventTree->SetBranchAddress("runNum", &runnum);               TBranch *runNumBr = eventTree->GetBranch("runNum");
       eventTree->SetBranchAddress("evtNum", &evtnum);               TBranch *evtNumBr = eventTree->GetBranch("evtNum");
       eventTree->SetBranchAddress("Info", &info);                   TBranch *infoBr = eventTree->GetBranch("Info");
+      eventTree->SetBranchAddress("GenEvtInfo", &geninfo);          TBranch *geninfoBr = eventTree->GetBranch("GenEvtInfo");
       eventTree->SetBranchAddress("PV", &vertexArr);                TBranch *vertexBr = eventTree->GetBranch("PV");
+      eventTree->SetBranchAddress("GenParticle", &genPartArr);      TBranch *genPartBr = eventTree->GetBranch("GenParticle");
       eventTree->SetBranchAddress("MuonPt", &muon_pt);              TBranch *muonPtBr = eventTree->GetBranch("MuonPt");
       eventTree->SetBranchAddress("MuonEta", &muon_eta);            TBranch *muonEtaBr = eventTree->GetBranch("MuonEta");
       eventTree->SetBranchAddress("MuonPhi", &muon_phi);            TBranch *muonPhiBr = eventTree->GetBranch("MuonPhi");
@@ -303,13 +304,11 @@ void selectDATA(const TString conf="samples.conf", // input file
       eventTree->SetBranchAddress("MuonNPixLayers", &muon_nPixLayers);        TBranch *muonNPixLayersBr = eventTree->GetBranch("MuonNPixLayers");
       eventTree->SetBranchAddress("MuonNMatchStn", &muon_nMatchStn);          TBranch *muonNMatchStnBr = eventTree->GetBranch("MuonNMatchStn");
       eventTree->SetBranchAddress("MuonTrkID", &muon_trkID);                  TBranch *muonTrkIDBr = eventTree->GetBranch("MuonTrkID");
-      eventTree->SetBranchAddress("MuonHltMatchBits", &muon_hltMatchBits);    TBranch *muonHltMatchBitsBr = eventTree->GetBranch("MuonHltMatchBits");
       eventTree->SetBranchAddress("VfTc", &vf_tC);                            TBranch *vfTcBr = eventTree->GetBranch("VfTc");
       eventTree->SetBranchAddress("VfDof", &vf_dOF);                          TBranch *vfDofBr = eventTree->GetBranch("VfDof");
       eventTree->SetBranchAddress("VfNc", &vf_nC);                            TBranch *vfNcBr = eventTree->GetBranch("VfNc");
       eventTree->SetBranchAddress("VfProb", &vf_Prob);                        TBranch *vfProbBr = eventTree->GetBranch("VfProb");
       eventTree->SetBranchAddress("Category", &tri_category);                 TBranch *triCategoryBr = eventTree->GetBranch("Category");
-      eventTree->SetBranchAddress("VfValid", &vf_valid);                      TBranch *vfValidBr = eventTree->GetBranch("VfValid");
       eventTree->SetBranchAddress("VfIp", &vf_ip);                            TBranch *vfIpBr = eventTree->GetBranch("VfIp");
       eventTree->SetBranchAddress("TriIso", &tri_iso);                        TBranch *triIsoBr = eventTree->GetBranch("TriIso");
       eventTree->SetBranchAddress("TriIsoNtrk", &tri_isoNtrk);                TBranch *triIsoNtrkBr = eventTree->GetBranch("TriIsoNtrk");
@@ -321,7 +320,8 @@ void selectDATA(const TString conf="samples.conf", // input file
         if(ientry%500==0) cout << "Processing event " << ientry << ". " << (double)ientry/(double)eventTree->GetEntries()*100 << " percent done with this file." << endl;
 
 	// Get Events
-	infoBr->GetEntry(ientry);        
+	infoBr->GetEntry(ientry);        geninfoBr->GetEntry(ientry);
+	genPartArr->Clear();             genPartBr->GetEntry(ientry);
 	vertexArr->Clear();              vertexBr->GetEntry(ientry);
 	runNumBr->GetEntry(ientry);
 	evtNumBr->GetEntry(ientry);
@@ -360,12 +360,10 @@ void selectDATA(const TString conf="samples.conf", // input file
 	muon_nPixLayers->clear();        muonNPixLayersBr->GetEntry(ientry);
 	muon_nMatchStn->clear();         muonNMatchStnBr->GetEntry(ientry);
 	muon_trkID->clear();             muonTrkIDBr->GetEntry(ientry);
-	muon_hltMatchBits->clear();      muonHltMatchBitsBr->GetEntry(ientry);
 	vf_tC->clear();                  vfTcBr->GetEntry(ientry);
 	vf_dOF->clear();                 vfDofBr->GetEntry(ientry);
 	vf_nC->clear();                  vfNcBr->GetEntry(ientry);
 	vf_Prob->clear();                vfProbBr->GetEntry(ientry);
-	vf_valid->clear();               vfValidBr->GetEntry(ientry);
 	tri_category->clear();           triCategoryBr->GetEntry(ientry);
 	vf_ip->clear();                  vfIpBr->GetEntry(ientry);
 	tri_iso->clear();                triIsoBr->GetEntry(ientry);
@@ -375,10 +373,9 @@ void selectDATA(const TString conf="samples.conf", // input file
 	std::vector<float> pt, eta, phi, ptErr, staPt, staEta, staPhi, pfPt, pfEta, pfPhi;
 	std::vector<float> trkIso, ecalIso, hcalIso, chHadIso, gammaIso, neuHadIso, puIso, d0, dz, sip3d;
 	std::vector<float> tkNchi2, muNchi2, trkKink, glbKink;
-	std::vector<int> q, nValidHits, trkID, category, Valid, triIsoNtrk;
+	std::vector<int> q, nValidHits, trkID, category, triIsoNtrk;
 	std::vector<unsigned int> typeBits, selectorBits, pogIDBits, nTkHits, nPixHits, nTkLayers, nPixLayers, nMatchStn;
 	std::vector<float> tC, dOF, nC, Prob, vfIp, triIso, invMass;
-	std::vector<TriggerObjects> hltMatchBits;
 
         for(vector<float>::iterator it = muon_pt->begin(); it != muon_pt->end(); it++)
 	  pt.push_back(*it);
@@ -441,9 +438,7 @@ void selectDATA(const TString conf="samples.conf", // input file
 	for(vector<int>::iterator it = muon_nValidHits->begin(); it != muon_nValidHits->end(); it++)
 	  nValidHits.push_back(*it);
 	for(vector<int>::iterator it = muon_trkID->begin(); it != muon_trkID->end(); it++)
-	  trkID.push_back(*it);
-	for(vector<TriggerObjects>::iterator it = muon_hltMatchBits->begin(); it != muon_hltMatchBits->end(); it++)
-	  hltMatchBits.push_back(*it);	
+	  trkID.push_back(*it);	
 	for(vector<float>::iterator it = muon_tkNchi2->begin(); it != muon_tkNchi2->end(); it++)
 	  tkNchi2.push_back(*it);
 	for(vector<float>::iterator it = muon_muNchi2->begin(); it != muon_muNchi2->end(); it++)
@@ -464,75 +459,38 @@ void selectDATA(const TString conf="samples.conf", // input file
 	  category.push_back(*it);
 	for(vector<float>::iterator it = tri_invmass->begin(); it != tri_invmass->end(); it++)
 	  invMass.push_back(*it);
-	for(vector<int>::iterator it = vf_valid->begin(); it != vf_valid->end(); it++)
-	  Valid.push_back(*it);
 	for(vector<float>::iterator it = vf_ip->begin(); it != vf_ip->end(); it++)
 	  vfIp.push_back(*it);
 	for(vector<float>::iterator it = tri_iso->begin(); it != tri_iso->end(); it++)
 	  triIso.push_back(*it);
 	for(vector<int>::iterator it = tri_isoNtrk->begin(); it != tri_isoNtrk->end(); it++)
 	  triIsoNtrk.push_back(*it);
-
 	
 	TLorentzVector temp1,temp2,temp3;
-	float minmass = 0;
+	float massdiff = 99;
 	int maxmassnum = -99;
 	for(int i=0; i<category.size(); i++){
 	  temp1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
 	  temp2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
-	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);//0.13957
+	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.13957);//0.13957
 	  float invmass_temp = (temp1+temp2+temp3).M();
-	  double mass_temp = (temp1+temp2).M();
+	  
+	  if(category[i] != 2) continue;
 
-	  if(category[i] != 1) continue;
+	  // dimuon sign
+	  if(q[i*3] * q[i*3+1] > 0) continue;
 
 	  // Mass cuts
-	  if(q[i*3] * q[i*3+1] < 0){
-	    double mass_temp = (temp1+temp2).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	    if(abs(mass_temp - 1.019) < 0.02) continue;
-	  }
-	  if(q[i*3] * q[i*3+2] < 0){
-	    double mass_temp = (temp1+temp3).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	    if(abs(mass_temp - 1.019) < 0.02) continue;
-	  }
-	  if(q[i*3+1] * q[i*3+2] < 0){
-	    double mass_temp = (temp2+temp3).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	    if(abs(mass_temp - 1.019) < 0.02) continue;
-	  }
+	  double mass_temp = (temp1+temp2).M();
+	  if(mass_temp < 0.45) continue;
+	  if(abs(mass_temp - 0.782) < 0.02) continue;
 
 	  // Sign Check
 	  int Ssign = q[i*3] + q[i*3+1] + q[i*3+2];
 	  if(Ssign != -1 && Ssign != 1) continue;
-
 	  
-	  if(!Valid[i]) continue;
-
-	  bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3]));
-	  bool MuonTriObj2 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+1]));
-	  bool MuonTriObj3 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+2]));
-	  if(ientry<50) cout<<MuonTriObj1<<MuonTriObj2<<MuonTriObj3<<endl;
-	  if(!MuonTriObj1) continue;
-	  if(!MuonTriObj2) continue;
-	  if(!MuonTriObj3) continue;
-
-	  
-	  if(invmass_temp > minmass){
-	    minmass = invmass_temp;
+	  if(abs(invmass_temp - 1.96847) < massdiff){
+	    massdiff = abs(invmass_temp - 1.96847);
 	    maxmassnum = i;
 	  }
 	}
@@ -541,9 +499,8 @@ void selectDATA(const TString conf="samples.conf", // input file
 	TLorentzVector v1,v2,v3;
 	v1.SetPtEtaPhiM(pt[maxmassnum*3],eta[maxmassnum*3],phi[maxmassnum*3],0.105658369);
 	v2.SetPtEtaPhiM(pt[maxmassnum*3+1],eta[maxmassnum*3+1],phi[maxmassnum*3+1],0.105658369);
-	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.105658369);
+	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.13957);
 	float invmass = (v1+v2+v3).M();
-	if(invmass < 1.65 || invmass > 1.89) continue;
 
 	// Sorting variables for BDT --------------------------------------------------
 	//Sort muon pt order
@@ -729,6 +686,8 @@ void selectDATA(const TString conf="samples.conf", // input file
   delete h_rw_down;
   delete f_rw;
   delete info;
+  delete geninfo;
+  delete genPartArr;
   delete vertexArr;
   
   //--------------------------------------------------------------------------------------------------------------
@@ -740,7 +699,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0 = new TCanvas("c0","invariant mass",1200,900);
   TAxis *xaxis = hist0->GetXaxis();
   TAxis *yaxis = hist0->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0->cd();
@@ -753,15 +712,51 @@ void selectDATA(const TString conf="samples.conf", // input file
 
 
   hist0->Draw();
+  //hist1->Draw("SAME");
+  
+  // all->Add(hist1);
+  //all->Add(hist2);
+  //all->Add(hist3);
+  //all->Add(hist4);
+  //c0->cd();
+  //c0->SetLogy();
+  /*
+    all->Draw();
+    TAxis *xaxis = all->GetXaxis();
+    TAxis *yaxis = all->GetYaxis();
+    xaxis->SetTitle("Invariant mass (GeV)");
+    yaxis->SetTitle("Entries");
+    yaxis->SetTitleOffset(1.2);
+    all->SetMinimum(8.);
+    all->SetMaximum(120000.);
+  */
+  
+  TF1 *total = new TF1("mstotal","gaus(0)+gaus(3)",1.7,1.85);
+  Double_t par[6]={0.02,1.75,0.02,0.01,1.75,0.1};
+  //hist0->Fit(f1,"R0");
+  //hist2->Fit(f2,"R0+");
+  //f1->GetParameters(&par[0]);
+  //f2->GetParameters(&par[3]);
+  total->SetParameters(par);
+  hist0->Fit(total,"R0+");
+  total->SetLineColor(2);
+  total->SetLineWidth(2);
+  total->Draw("SAME");
+  //f1->SetLineColor(3);
+  //f1->Draw("SAME");
+
+  //auto legend = new TLegend(0.5,0.7,0.7,0.8);
+  //legend->AddEntry(hist1,"3 muons with opposite signs","f");
+  //legend->AddEntry(hist0,"Tau -> 3 Mu MC","f");
+  //legend->Draw();
   
 
   c0->Print("invariant mass.png");
 
-  /*
   TCanvas *c0a = new TCanvas("c0a","invariant mass",1200,900);
   xaxis = hist1a->GetXaxis();
   yaxis = hist1a->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0a->cd();
@@ -779,7 +774,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0b = new TCanvas("c0b","invariant mass",1200,900);
   xaxis = hist1b->GetXaxis();
   yaxis = hist1b->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0b->cd();
@@ -797,7 +792,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0c = new TCanvas("c0c","invariant mass",1200,900);
   xaxis = hist1c->GetXaxis();
   yaxis = hist1c->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0c->cd();
@@ -816,7 +811,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   cout<<hist1d->GetEntries()<<endl;
   xaxis = hist1d->GetXaxis();
   yaxis = hist1d->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 1 GeV");
   yaxis->SetTitleOffset(1.3);
   c0d->cd();
@@ -912,7 +907,6 @@ void selectDATA(const TString conf="samples.conf", // input file
   //legend->Draw();
 
   c3->Print("phi.png");
-  */
 
   gBenchmark->Show("select3Mu");
 

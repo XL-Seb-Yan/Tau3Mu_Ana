@@ -50,7 +50,6 @@ void selectMC(const TString conf="samples.conf", // input file
 	       const Bool_t  doScaleCorr=0   // apply energy scale corrections?
 	       ) {
   gBenchmark->Start("select3Mu");
-  gSystem->Load("/afs/cern.ch/work/x/xuyan/work4/CMSSW_8_0_27/src/Tau3Mu_Ana/Selection/lib/libMylib.so");
   //--------------------------------------------------------------------------------------------------------------
   // Settings 
   //============================================================================================================== 
@@ -89,7 +88,7 @@ void selectMC(const TString conf="samples.conf", // input file
   TH1F* hist9c = new TH1F("tau -> 3 muon 9c","MC RECO #eta",50,-3,3);
   TH1F* hist10c = new TH1F("tau -> 3 muon 10c","MC RECO #varphi",25,-3.5,3.5);
   UInt_t count1=0, count2=0, count3=0, count4=0, count5=0, count6=0;
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(111111);
 
   
   // load trigger menu
@@ -160,13 +159,11 @@ void selectMC(const TString conf="samples.conf", // input file
   std::vector<unsigned int>   *muon_nPixLayers = new std::vector<unsigned int>();
   std::vector<unsigned int>   *muon_nMatchStn = new std::vector<unsigned int>();
   std::vector<int>   *muon_trkID = new std::vector<int>();
-  std::vector<TriggerObjects>   *muon_hltMatchBits = new std::vector<std::bitset<256> >();
   std::vector<float> *vf_tC = new std::vector<float>();
   std::vector<float> *vf_dOF = new std::vector<float>();
   std::vector<float> *vf_nC = new std::vector<float>();
   std::vector<float> *vf_Prob = new std::vector<float>();
   std::vector<int>   *tri_category = new std::vector<int>();
-  std::vector<int>   *vf_valid = new std::vector<int>();
   std::vector<float> *vf_ip = new std::vector<float>();
   std::vector<float> *tri_iso = new std::vector<float>();
   std::vector<int>   *tri_isoNtrk = new std::vector<int>();
@@ -307,13 +304,11 @@ void selectMC(const TString conf="samples.conf", // input file
       eventTree->SetBranchAddress("MuonNPixLayers", &muon_nPixLayers);        TBranch *muonNPixLayersBr = eventTree->GetBranch("MuonNPixLayers");
       eventTree->SetBranchAddress("MuonNMatchStn", &muon_nMatchStn);          TBranch *muonNMatchStnBr = eventTree->GetBranch("MuonNMatchStn");
       eventTree->SetBranchAddress("MuonTrkID", &muon_trkID);                  TBranch *muonTrkIDBr = eventTree->GetBranch("MuonTrkID");
-      eventTree->SetBranchAddress("MuonHltMatchBits", &muon_hltMatchBits);    TBranch *muonHltMatchBitsBr = eventTree->GetBranch("MuonHltMatchBits");
       eventTree->SetBranchAddress("VfTc", &vf_tC);                            TBranch *vfTcBr = eventTree->GetBranch("VfTc");
       eventTree->SetBranchAddress("VfDof", &vf_dOF);                          TBranch *vfDofBr = eventTree->GetBranch("VfDof");
       eventTree->SetBranchAddress("VfNc", &vf_nC);                            TBranch *vfNcBr = eventTree->GetBranch("VfNc");
       eventTree->SetBranchAddress("VfProb", &vf_Prob);                        TBranch *vfProbBr = eventTree->GetBranch("VfProb");
       eventTree->SetBranchAddress("Category", &tri_category);                 TBranch *triCategoryBr = eventTree->GetBranch("Category");
-      eventTree->SetBranchAddress("VfValid", &vf_valid);                      TBranch *vfValidBr = eventTree->GetBranch("VfValid");
       eventTree->SetBranchAddress("VfIp", &vf_ip);                            TBranch *vfIpBr = eventTree->GetBranch("VfIp");
       eventTree->SetBranchAddress("TriIso", &tri_iso);                        TBranch *triIsoBr = eventTree->GetBranch("TriIso");
       eventTree->SetBranchAddress("TriIsoNtrk", &tri_isoNtrk);                TBranch *triIsoNtrkBr = eventTree->GetBranch("TriIsoNtrk");
@@ -365,12 +360,10 @@ void selectMC(const TString conf="samples.conf", // input file
 	muon_nPixLayers->clear();        muonNPixLayersBr->GetEntry(ientry);
 	muon_nMatchStn->clear();         muonNMatchStnBr->GetEntry(ientry);
 	muon_trkID->clear();             muonTrkIDBr->GetEntry(ientry);
-	muon_hltMatchBits->clear();      muonHltMatchBitsBr->GetEntry(ientry);
 	vf_tC->clear();                  vfTcBr->GetEntry(ientry);
 	vf_dOF->clear();                 vfDofBr->GetEntry(ientry);
 	vf_nC->clear();                  vfNcBr->GetEntry(ientry);
 	vf_Prob->clear();                vfProbBr->GetEntry(ientry);
-	vf_valid->clear();               vfValidBr->GetEntry(ientry);
 	tri_category->clear();           triCategoryBr->GetEntry(ientry);
 	vf_ip->clear();                  vfIpBr->GetEntry(ientry);
 	tri_iso->clear();                triIsoBr->GetEntry(ientry);
@@ -380,10 +373,9 @@ void selectMC(const TString conf="samples.conf", // input file
 	std::vector<float> pt, eta, phi, ptErr, staPt, staEta, staPhi, pfPt, pfEta, pfPhi;
 	std::vector<float> trkIso, ecalIso, hcalIso, chHadIso, gammaIso, neuHadIso, puIso, d0, dz, sip3d;
 	std::vector<float> tkNchi2, muNchi2, trkKink, glbKink;
-	std::vector<int> q, nValidHits, trkID, category, Valid, triIsoNtrk;
+	std::vector<int> q, nValidHits, trkID, category, triIsoNtrk;
 	std::vector<unsigned int> typeBits, selectorBits, pogIDBits, nTkHits, nPixHits, nTkLayers, nPixLayers, nMatchStn;
 	std::vector<float> tC, dOF, nC, Prob, vfIp, triIso, invMass;
-	std::vector<TriggerObjects> hltMatchBits;
 
         for(vector<float>::iterator it = muon_pt->begin(); it != muon_pt->end(); it++)
 	  pt.push_back(*it);
@@ -446,9 +438,7 @@ void selectMC(const TString conf="samples.conf", // input file
 	for(vector<int>::iterator it = muon_nValidHits->begin(); it != muon_nValidHits->end(); it++)
 	  nValidHits.push_back(*it);
 	for(vector<int>::iterator it = muon_trkID->begin(); it != muon_trkID->end(); it++)
-	  trkID.push_back(*it);
-	for(vector<TriggerObjects>::iterator it = muon_hltMatchBits->begin(); it != muon_hltMatchBits->end(); it++)
-	  hltMatchBits.push_back(*it);	
+	  trkID.push_back(*it);	
 	for(vector<float>::iterator it = muon_tkNchi2->begin(); it != muon_tkNchi2->end(); it++)
 	  tkNchi2.push_back(*it);
 	for(vector<float>::iterator it = muon_muNchi2->begin(); it != muon_muNchi2->end(); it++)
@@ -469,8 +459,6 @@ void selectMC(const TString conf="samples.conf", // input file
 	  category.push_back(*it);
 	for(vector<float>::iterator it = tri_invmass->begin(); it != tri_invmass->end(); it++)
 	  invMass.push_back(*it);
-	for(vector<int>::iterator it = vf_valid->begin(); it != vf_valid->end(); it++)
-	  Valid.push_back(*it);
 	for(vector<float>::iterator it = vf_ip->begin(); it != vf_ip->end(); it++)
 	  vfIp.push_back(*it);
 	for(vector<float>::iterator it = tri_iso->begin(); it != tri_iso->end(); it++)
@@ -525,8 +513,6 @@ void selectMC(const TString conf="samples.conf", // input file
 	  int Ssign = q[i*3] + q[i*3+1] + q[i*3+2];
 	  if(Ssign != -1 && Ssign != 1) continue;
 
-	  if(!Valid[i]) continue;
-
 	  // GEN-RECO matching
 	  // Calculate deltaR
 	  float deltaR11 = toolbox::deltaR(eta[i*3],phi[i*3],genmuonArr[0]->eta, genmuonArr[0]->phi);
@@ -543,23 +529,6 @@ void selectMC(const TString conf="samples.conf", // input file
 	  if (deltaR21 > 0.025 && deltaR22 > 0.025 && deltaR23 > 0.025) continue;
 	  if (deltaR31 > 0.025 && deltaR32 > 0.025 && deltaR33 > 0.025) continue;
 	  
-	  bool MuonTriObj1 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3]));
-	  bool MuonTriObj2 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+1]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+1]));
-	  bool MuonTriObj3 = (triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltDoubleMu3TrkTau3muL3Filtered",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL1fL1sL1DoubleMuorTripleMuL1Filtered0",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltL2fL1sL1DoubleMuorTripleMuL1f0L2PreFiltered0",hltMatchBits[i*3+2]) ||
-			      triggerMenu.passObj("HLT_DoubleMu3_Trk_Tau3mu_v*","hltTau3muTkVertexFilter",hltMatchBits[i*3+2]));
-	  if(ientry<50) cout<<MuonTriObj1<<MuonTriObj2<<MuonTriObj3<<endl;
-	  if(!MuonTriObj1) continue;
-	  if(!MuonTriObj2) continue;
-	  if(!MuonTriObj3) continue;
-
 	  if(abs(invmass_temp - 1.77632) < massdiff){
 	    massdiff = abs(invmass_temp - 1.77632);
 	    maxmassnum = i;

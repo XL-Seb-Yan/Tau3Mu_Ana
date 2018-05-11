@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # output ntuple directory
-NTUPDIR=/afs/cern.ch/user/x/xuyan/3MuonProj/CMSSW_8_0_27/src/DataFlat
+NTUPDIR=/afs/cern.ch/work/x/xuyan/scratch/CMSSW_8_0_27/src/Ntuples
 
 # integrated luminosity for data
 LUMI=2215

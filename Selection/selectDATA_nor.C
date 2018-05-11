@@ -54,11 +54,11 @@ void selectDATA(const TString conf="samples.conf", // input file
   // Settings 
   //============================================================================================================== 
   //TH1F* hist0 = new TH1F("tau -> 3 muon 0","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",60,1.5,2.1);
-  TH1F* hist0 = new TH1F("tau -> 3 muon 0","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1a = new TH1F("tau -> 3 muon 1a","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1b = new TH1F("tau -> 3 muon 1b","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1c = new TH1F("tau -> 3 muon 1c","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",80,1.4,2.2);
-  TH1F* hist1d = new TH1F("tau -> 3 muon 1d","DATA RECO m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}",50,0,50);
+  TH1F* hist0 = new TH1F("tau -> 3 muon 0","DATA RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1a = new TH1F("tau -> 3 muon 1a","DATA RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1b = new TH1F("tau -> 3 muon 1b","DATA RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1c = new TH1F("tau -> 3 muon 1c","DATA RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",80,1.4,2.2);
+  TH1F* hist1d = new TH1F("tau -> 3 muon 1d","DATA RECO m_{#mu^{+}#mu^{-}#pi^{#pm}}",50,0,50);
   
   TH1F* hist2 = new TH1F("tau -> 3 muon 2","DATA RECO p_{T}",125,0,25);
   TH1F* hist3 = new TH1F("tau -> 3 muon 3","DATA RECO #eta",50,-3,3);
@@ -193,7 +193,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     CSample* samp = samplev[isam];
 
     // Set up output ntuple ----------- Mass resolution category 1 -----------------------------
-    TString outfilename1 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC1.root");
+    TString outfilename1 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC1.root");
     TFile *outFile1 = new TFile(outfilename1,"RECREATE"); 
     TTree *outTree1 = new TTree("Events","Events");
     outTree1->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -212,7 +212,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     outTree1->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
 
     // Set up output ntuple ----------- Mass resolution category 2 -----------------------------
-    TString outfilename2 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC2.root");
+    TString outfilename2 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC2.root");
     TFile *outFile2 = new TFile(outfilename2,"RECREATE"); 
     TTree *outTree2 = new TTree("Events","Events");
     outTree2->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -231,7 +231,7 @@ void selectDATA(const TString conf="samples.conf", // input file
     outTree2->Branch("BDT_triIsoNtrk", &BDT_triIsoNtrk,"BDT_triIsoNtrk/F");
 
     // Set up output ntuple ----------- Mass resolution category 3 -----------------------------
-    TString outfilename3 = ntupDir + TString("/") + snamev[isam] + TString("_Tau3Mu_select_MRC3.root");
+    TString outfilename3 = ntupDir + TString("/") + snamev[isam] + TString("_DsPhiPi_select_MRC3.root");
     TFile *outFile3 = new TFile(outfilename3,"RECREATE"); 
     TTree *outTree3 = new TTree("Events","Events");
     outTree3->Branch("BDT_mass", &BDT_mass,"BDT_mass/F");
@@ -469,27 +469,18 @@ void selectDATA(const TString conf="samples.conf", // input file
 	for(int i=0; i<category.size(); i++){
 	  temp1.SetPtEtaPhiM(pt[i*3],eta[i*3],phi[i*3],0.105658369);
 	  temp2.SetPtEtaPhiM(pt[i*3+1],eta[i*3+1],phi[i*3+1],0.105658369);
-	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.105658369);//0.13957
+	  temp3.SetPtEtaPhiM(pt[i*3+2],eta[i*3+2],phi[i*3+2],0.13957);//0.13957
 	  float invmass_temp = (temp1+temp2+temp3).M();
 	  
-	  if(category[i] != 1) continue;
+	  if(category[i] != 2) continue;
 
 	  // Mass cuts
-	  if(q[i*3] * q[i*3+1] < 0){
-	    double mass_temp = (temp1+temp2).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	  }
-	  if(q[i*3] * q[i*3+2] < 0){
-	    double mass_temp = (temp1+temp3).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	  }
-	  if(q[i*3+1] * q[i*3+2] < 0){
-	    double mass_temp = (temp2+temp3).M();
-	    if(mass_temp < 0.45) continue;
-	    if(abs(mass_temp - 0.782) < 0.02) continue;
-	  }
+	  if(q[i*3] * q[i*3+1] > 0) continue;
+	  
+	  double mass_temp = (temp1+temp2).M();
+	  if(mass_temp < 0.45) continue;
+	  if(abs(mass_temp - 0.782) < 0.02) continue;
+	  if(abs(mass_temp - 1.02) > 0.02) continue;
 
 	  // Sign Check
 	  int Ssign = q[i*3] + q[i*3+1] + q[i*3+2];
@@ -505,7 +496,7 @@ void selectDATA(const TString conf="samples.conf", // input file
 	TLorentzVector v1,v2,v3;
 	v1.SetPtEtaPhiM(pt[maxmassnum*3],eta[maxmassnum*3],phi[maxmassnum*3],0.105658369);
 	v2.SetPtEtaPhiM(pt[maxmassnum*3+1],eta[maxmassnum*3+1],phi[maxmassnum*3+1],0.105658369);
-	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.105658369);
+	v3.SetPtEtaPhiM(pt[maxmassnum*3+2],eta[maxmassnum*3+2],phi[maxmassnum*3+2],0.13957);
 	float invmass = (v1+v2+v3).M();
 
 	// Sorting variables for BDT --------------------------------------------------
@@ -703,7 +694,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0 = new TCanvas("c0","invariant mass",1200,900);
   TAxis *xaxis = hist0->GetXaxis();
   TAxis *yaxis = hist0->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0->cd();
@@ -760,7 +751,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0a = new TCanvas("c0a","invariant mass",1200,900);
   xaxis = hist1a->GetXaxis();
   yaxis = hist1a->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0a->cd();
@@ -778,7 +769,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0b = new TCanvas("c0b","invariant mass",1200,900);
   xaxis = hist1b->GetXaxis();
   yaxis = hist1b->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0b->cd();
@@ -796,7 +787,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   TCanvas *c0c = new TCanvas("c0c","invariant mass",1200,900);
   xaxis = hist1c->GetXaxis();
   yaxis = hist1c->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 10 MeV");
   yaxis->SetTitleOffset(1.3);
   c0c->cd();
@@ -815,7 +806,7 @@ void selectDATA(const TString conf="samples.conf", // input file
   cout<<hist1d->GetEntries()<<endl;
   xaxis = hist1d->GetXaxis();
   yaxis = hist1d->GetYaxis();
-  xaxis->SetTitle("m_{#mu^{#pm}#mu^{#pm}#mu^{#pm}}");
+  xaxis->SetTitle("m_{#mu^{+}#mu^{-}#pi^{#pm}}");
   yaxis->SetTitle("a.u. / 1 GeV");
   yaxis->SetTitleOffset(1.3);
   c0d->cd();
